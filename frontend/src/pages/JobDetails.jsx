@@ -21,7 +21,7 @@ function JobDetails() {
 
   useEffect(() => {
 
-    fetch(`http://127.0.0.1:5000/api/jobs/${id}`)
+    fetch(`https://servercarrergo.onrender.com/api/jobs/${id}`)
 
       .then((response) => {
 
@@ -128,7 +128,7 @@ function JobDetails() {
 
 
     fetch(
-      `http://127.0.0.1:5000/api/applications/check/${id}/${user.id}`
+      `https://servercarrergo.onrender.com/api/applications/check/${id}/${user.id}`
     )
 
       .then((response) => {

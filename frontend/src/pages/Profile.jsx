@@ -71,7 +71,7 @@ function Profile() {
       formData.append("resume", resume);
 
       const response = await fetch(
-        "http://127.0.0.1:5000/api/user/upload-resume",
+        "https://servercarrergo.onrender.com/api/user/upload-resume",
         {
           method: "POST",
           body: formData
@@ -160,7 +160,7 @@ function Profile() {
     }
 
     window.open(
-      `http://127.0.0.1:5000/api/user/resume/${user.id}`,
+      `https://servercarrergo.onrender.com/api/user/resume/${user.id}`,
       "_blank"
     );
   };

@@ -17,7 +17,7 @@ function MyJobs() {
 
     const company = JSON.parse(storedCompany);
 
-    fetch(`http://127.0.0.1:5000/api/company/jobs/${company.id}`)
+    fetch(`https://servercarrergo.onrender.com/api/company/jobs/${company.id}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("MY JOBS RESPONSE:", data);
@@ -45,7 +45,7 @@ function MyJobs() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/jobs/${jobId}`,
+        `https://servercarrergo.onrender.com/api/jobs/${jobId}`,
         {
           method: "DELETE",
         }

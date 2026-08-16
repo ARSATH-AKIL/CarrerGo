@@ -16,7 +16,7 @@ function ApplyJob() {
       setLoading(false);
       return;
     }
-    fetch(`http://127.0.0.1:5000/api/jobs/${jobId}`)
+    fetch(`https://servercarrergo.onrender.com/api/jobs/${jobId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Job not found");
@@ -59,7 +59,7 @@ function ApplyJob() {
       return;
     }
     fetch(
-      `http://127.0.0.1:5000/api/applications/check/${jobId}/${user.id}`
+      'https://servercarrergo.onrender.com/api/applications/check/${jobId}/${user.id}'
     )
       .then((response) => {
         if (!response.ok) {
@@ -115,7 +115,7 @@ function ApplyJob() {
     setMessage("");
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/applications",
+        "https://servercarrergo.onrender.com/api/applications",
         {
           method: "POST",
           headers: {

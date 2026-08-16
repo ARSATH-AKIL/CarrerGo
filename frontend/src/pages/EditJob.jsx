@@ -20,7 +20,7 @@ function EditJob() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/api/jobs/${id}`)
+    fetch(`https://servercarrergo.onrender.com/api/jobs/${id}`)
       .then((response) => response.json())
       .then((data) => {
         console.log("EDIT JOB RESPONSE:", data);
@@ -63,7 +63,7 @@ function EditJob() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/jobs/${id}`,
+        `https://servercarrergo.onrender.com/api/jobs/${id}`,
         {
           method: "PUT",
           headers: {

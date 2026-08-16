@@ -39,7 +39,7 @@ function CompanyDashboard() {
       // =================================================
 
       fetch(
-        `http://127.0.0.1:5000/api/company/jobs/${companyData.id}`
+        'https://servercarrergo.onrender.com/api/company/jobs/${companyData.id}'
       )
         .then((response) => {
 
@@ -81,7 +81,7 @@ function CompanyDashboard() {
       // =================================================
 
       fetch(
-        `http://127.0.0.1:5000/api/company/applications/${companyData.id}`
+        `https://servercarrergo.onrender.com/api/company/applications/${companyData.id}`
       )
         .then((response) => {
 
@@ -237,7 +237,7 @@ function CompanyDashboard() {
     }
 
     const resumeUrl =
-      `http://127.0.0.1:5000${application.resume_view_url}`;
+      `https://servercarrergo.onrender.com${application.resume_view_url}`;
 
     console.log(
       "OPENING RESUME:",

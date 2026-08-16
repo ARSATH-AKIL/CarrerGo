@@ -35,7 +35,7 @@ function CompanyLogin() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/company/login",
+        "https://servercarrergo.onrender.com/api/company/login",
         {
           method: "POST",
 

@@ -30,7 +30,7 @@ function Applications() {
         company.id
       );
       const response = await fetch(
-        `http://127.0.0.1:5000/api/company/applications/${company.id}`
+        fetch(`https://servercarrergo.onrender.com/api/company/applications/${company.id}`)
       );
       const data = await response.json();
       console.log(
@@ -69,7 +69,7 @@ function Applications() {
   ) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/applications/${applicationId}`,
+        `https://servercarrergo.onrender.com/api/applications/${applicationId}`,
         {
           method: "PUT",
           headers: {

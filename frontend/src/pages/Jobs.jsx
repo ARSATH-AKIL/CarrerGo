@@ -16,7 +16,7 @@ function Jobs() {
 
   // Get jobs from Flask + MySQL
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/jobs")
+    fetch("https://servercarrergo.onrender.com/api/jobs")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch jobs");

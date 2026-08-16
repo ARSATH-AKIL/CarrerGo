@@ -27,7 +27,7 @@ function AppliedJobs() {
     }
     console.log("Logged in user:", user);
     fetch(
-      `http://127.0.0.1:5000/api/user/applications/${user.id}`
+      `https://servercarrergo.onrender.com/api/user/applications/${user.id}`
     )
       .then((response) => {
         if (!response.ok) {
