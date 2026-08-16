@@ -19,14 +19,15 @@ CORS(
     },
     supports_credentials=False
 )
+# =========================================================
+# DATABASE CONFIGURATION
+# =========================================================
 
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT")),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME")
-}
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT", "10667")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
 
 # Optional SSL configuration
 DB_SSL_CA = os.getenv("DB_SSL_CA", "").strip()
@@ -36,14 +37,15 @@ DB_SSL_DISABLED = os.getenv(
 ).lower() == "true"
 
 
+# =========================================================
+# DATABASE CONNECTION
+# =========================================================
+
 def get_db_connection():
-   
+
     try:
 
-        # ---------------------------------------------
         # Check environment variables
-        # ---------------------------------------------
-
         if not DB_HOST:
             print("DATABASE ERROR: DB_HOST is missing")
             return None
@@ -56,29 +58,30 @@ def get_db_connection():
             print("DATABASE ERROR: DB_NAME is missing")
             return None
 
+        if not DB_PASSWORD:
+            print("DATABASE ERROR: DB_PASSWORD is missing")
+            return None
+
         try:
             port = int(DB_PORT)
-        except ValueError:
+        except (ValueError, TypeError):
             print("DATABASE ERROR: DB_PORT must be a number")
             return None
 
-        # ---------------------------------------------
-        # Basic connection configuration
-        # ---------------------------------------------
-
+        # Database configuration
         config = {
             "host": DB_HOST,
             "port": port,
             "user": DB_USER,
-            "password": DB_PASSWORD or "",
+            "password": DB_PASSWORD,
             "database": DB_NAME,
             "connection_timeout": 30,
             "autocommit": False
         }
 
-        # ---------------------------------------------
+        # =================================================
         # SSL
-        # ---------------------------------------------
+        # =================================================
 
         if DB_SSL_CA:
 
@@ -89,9 +92,9 @@ def get_db_connection():
 
             config["ssl_disabled"] = True
 
-        # ---------------------------------------------
-        # Connect
-        # ---------------------------------------------
+        # =================================================
+        # CONNECT TO MYSQL
+        # =================================================
 
         connection = mysql.connector.connect(**config)
 
@@ -175,9 +178,9 @@ def test_database_connection():
 
             try:
                 db.close()
+
             except Exception:
                 pass
-
 
 # =========================================================
 # FILE UPLOAD CONFIGURATION
