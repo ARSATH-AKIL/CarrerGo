@@ -1,0 +1,108 @@
+import { Link } from "react-router-dom";
+
+function Companies() {
+  const companies = [
+    {
+      logo: "https://static.vecteezy.com/system/resources/thumbnails/053/257/215/small/abstract-neural-connect-network-technology-digital-modern-solution-logo-design-illustration-vector.jpg",
+      name: "Tech Solutions",
+      location: "Chennai",
+      industry: "Software Development",
+      jobs: 12,
+    },
+    {
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSzB0Ogh_LGOYKd4dfgoo5XqS4gnjzbo86fYNzBW9NJg&s=10",
+      name: "Web Innovations",
+      location: "Bangalore",
+      industry: "Web Development",
+      jobs: 8,
+    },
+    {
+      logo: "https://play-lh.googleusercontent.com/T01um-HGM_h7YiwXv-PvpjgVr3rIVY6-vnBhwHLmLJ__exhcXmKuXNZy7d3hte2d6FLBz5L5gBtKFjseAgoS",
+      name: "Digital Works",
+      location: "Hyderabad",
+      industry: "IT Services",
+      jobs: 15,
+    },
+    {
+      logo: "https://media.licdn.com/dms/image/v2/C560BAQFpdtZK-R8Xxg/company-logo_200_200/company-logo_200_200/0/1677378503093?e=2147483647&v=beta&t=_E9s47SzcolGVtPRloaM8ATfariQOvB7rnZI4wLQJ3A",
+      name: "FAAZ Tech & Solution",
+      location: "Theni",
+      industry: "Technology",
+      jobs: 5,
+    },
+    {
+      logo: "data:image/png;base64,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",
+      name: "AssetPlus",
+      location: "Chennai",
+      industry: "FinTech",
+      jobs: 10,
+    },
+    {
+      logo: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAIwA4QMBIgACEQEDEQH/xAAcAAEAAwEAAwEAAAAAAAAAAAAABQYHBAECAwj/xABLEAABAwIDBAUHBgsGBwEAAAABAAIDBAUGESEHEjFBExRRYYEiMkJxkaGxFSNSdMHRJDZTcoKSk7Kz4fAXNWKDwvE0N0NjlaLSFv/EABkBAQADAQEAAAAAAAAAAAAAAAACAwQBBf/EACcRAAIDAAEDAwQDAQAAAAAAAAABAgMREgQhMSIyQRMzQmGBobFx/9oADAMBAAIRAxEAPwDcUREAVSvFb1yqO6fmo9Gd/epu/VfV6PcYcpJfJHcOf9d6qqvpj+R53W2/ggiIrzAEREAREQBek80VPC+aolZFEwZvfI4Na0dpJ4Ljvl3o7HbZa+vfuxRjRo857uTWjtKxusr8Q7R7t1albuUzDvNhDiIoR9J55nv49gUJT49vkuqpc+77Iu962pWahc6O3RS3CQabzfm4/wBYjM+AVYqNrV5kf+CUFFG3seHvPxHwVuw/s0sltY19ew3CpGpdLpGD3M5+OauFPS09KwMpqeKFg4NjYGgexcyb8vC3nRDso6ZBBtavUb/wqhoZG9jWvYf3j8FZrLtUtFa5sdygloJDpvZ9JH7QMx7FeZ6aCpYWVEEUrDxbIwOHvVRxBs2sd0Y59FH8nVPJ8A8gnvZw9mScZrw9HOifaUcLfTzw1UDJ6aVk0Lxm2SNwc1w7iF9FhcVRiLZvdxDKN6mkO8Y8yYahvMtPI+8aZ6cdjsF6or/bY6+3vzjdo5h86N3Nrh2rsZ72+Su2lw7ruiRREUygIiIAiIgOm31bqOpbK3VvBw7Qrix7ZGNew5tcMwRzCoqsWG6vfidTPOrNW+r+viqbY9tN3R24+D+SaREWc9IIiIAiL41c3V6aWX6DSR60ON4tZWb3U9Yr3gHyY/IHhx96j15JJJJOZK8Laliw8KcnKTkwiIukQiIgCIojF9xNqwzcq1jt2SOEhh7HO8lvvIRvDsVrxGU41udVjLF8Votrt6nil6CBufkud6Uh7tPYFrWHLHSYetcdDRN0GskhHlSv5uP9aBZzsUtbZKqvusjczE1sMR73au9wHtWsqutb6maeplmVR8ILjud1oLVCJblWQ0zHHJpkdlvHuHNdixLbC2rGKw6o3urup2dX7MvS8d7P3KU5cVpXRUrJ8WzYrbc6G6wGe3VcNTGDkXROzyPYexda/PmAsQnD2IIp5HEUk3zVQOW6fS8Dr7e1foMEEAggg8CFyE+SO30/SlnwR9/s1HfrZLQV7M436tePOjdyc3v/ANlj+F7jVYFxjLbri7dpnyCGo+jkfMkHtB9RK3BZZtstbQLfdmNAcSaeQ9vpN/1Lli/JE+mlr+nLwzU0UFge4uumFLbVSOLpOi6N5PEuYd0nxyz8VOqxPVpmkuLaYREQ4EREAXRb6jqtZFLyByd6ua50RrTqbi9RfEXFZ5+nt0Lj5wG6fDRdqxNY8PdjLlFNBERcJBReIpNy37o/6jwPt+xSigcUP/4dn5x+CnWtkijqXlTIFERazxgiIgCIiAKo7ViRgisy5yRZ/rhW5QOO6B1ywjc6dgJf0PSNA4ksIdl/65Lkvayyp5ZF/sr2xcN//MVRHndddvfqMV/WWbEri0C5Wx5Acd2ojHb6Lv8AStTUa36UT6lZayCxBi6zYelZDcakidw3hFGwudl2ns8VA4rituPcKS1VllbPU0RMkY3cng5eUwg66gadpAWbbQ4KqDGNz64Hb0ku/G4jzoz5uXdlp4Ky7FIKv5Xr6lgcKNtPuPPIvLgW+OQd7e9Q5uUuLNH0I11q1PuZutw2U4h+VrH1CofnV0ADNeL4/RPhw8B2rP8Aadh75Ev7p4GZUdbnLHlwa70m+3X1Edi4MA3Cot+Lbc+mBPTTNgkaPSY8gH2cfBVxbhLDRbFXVaj9DKj7YmsdhAF2WbauMt9eTvszV4WZbbLiwUlutjSC90hqHDsABaPbm72LRY/SzzunW2omdkRccGx73AVEgHq0/mroq5s7oXW/B1tikGT5GGY6fTJcPcQrGkPaiNz2yT/YREUisIiIAiIgLDhiTOKeL6Lg4eP+ym1WsNPyrpG/SjPuIVlWW1eo9fpHtSCIirNIVcxOfwqEdjPtVjVcxMPwqE/9v7VZV7jN1f2mQyIi1HkBERAEREAQgEZEZg8iiIDCrzT1WAcbtqaVhNOHmWAcBJE7izw1HsK2q03Klu9vhrqGQSQTNzB5g8wewhR+LcN0uJrWaSoPRzMO9BMBrG77QeY+0BZHbbpftnd4kpamAmFxzkgeT0cw+kx32+BHJU/bf6NuLqIdvcv7NsuNrt90Y1txoqepDPN6WMO3fV2L60lJTUUDaejgighb5scTA1o8AoTD+M7JfmNFNVthqDxp5yGPz7uR8FYlasfdGSSlH0yI+92agvtEaO5wCWLPebrk5p7QeRUTh/A1jsFX1ukilkqQCGSTv3izPsGQHjxVmUBiDGFlsLHdbq2yTjhTwkPkJ9XLxyRqPlkoOxrjElblX01roZq2ulEVPC3ee4/AdpPABYlRx1W0LHBkla5tO529JlwhgbwHrPD1nNLveb5tCvEVFRwubADnHTMPkMH03n7fAcddYwfhilwxbOrw5SVMmTqifLV7uwdw5D71V9x/o0pLp46/c/6J1rWsaGtADQMgByC8oiuMQREQBERAEREBJYfOVzYO1rvgrUqpYBnc4+5rvgrWs13uPV6L7f8AIREVRrCgMUN1pn/nA+5T6isSR79AHgeY8HwOn3KdbySKOpW1MrCIi1njBERAEREAREQBcV3tNBeaQ0tzpmTxcQHcWntB4g+pdqIdTaeoyq97JHhzpLHXtLeUNVoR+kBr7FCtwtj62/NUnXWxt0b1etG7l3AO+xbeirdUfg0Lq7EsfcxF2GNoFw+aqevujdo4T1o3fYXKWs2ySZzg+917WM5xUurj+kRkPYVrCIqo/J19XZmLscFms1vslL1a2UrII/Sy1c89rjxK70RWGZtt6wiIhwIiIAiIgCIiAlsNtzr3u5NjPxCsygsMR+TPL2kNH9eIU6str9R6/SLKkERFWaQvhXQ9Yo5ohxc05evkvuiLsca1Yyhou270/Vq+RoHkuO+31H+ea4luT1aeFKLjJphERCIUDiLF9nw7PFBcZn9NIN4RxM3iG9p7ApySRkUb5JHBrGNLnOPAAcSsBq4a/G+IbtXUjc+jjfOGuz0jbo1o/wARGWnbmoTk4+DR09Sm25eEb1RVcFfSQ1dJKJYJmhzHt5hReI8UWvDhgF0fK0z724I4y7hln8QqhsYvXT0FTZpX+XTnpoQT6BPlAep2v6SuGIcMWvERgN0ikeYN4R7khblnlnw9QXVJyjqIyhGuzjPwQv8Aafhn8rVfsD96f2n4Z/K1X7A/es92m4et2HrlRw2xj2RywF7g95drvEc1ebTs5w3U2qiqJqecyS08b3kTkZktBKrUpt4XyrojFSe9y33W60lptclyrHOFNGGlxa3M+UQBp6yFz4exDb8RU8s9sfI5kT9x3SM3Tnlmonac0MwHcWtGQaIQB/msVb2O3Cho7RXsq6ymgc6oBDZZWsJG73lTcsnhVGpOlz+dNAvl4o7Fb3V1wc9sDXBubG7xzPDRemH77Q4honVlte90LZDG7fZukOAB+BCqe1S52+qwlJFTV9LNIZ4yGRzNcefIFNi34q1X19/8ONOXrwfSX0eb86TF9x3Y7HcH0FZJO6oYAXiKPeDcxmATmNcslHjalhrtrf2A+9UHG1PHV7T5qaYExzVMEbwDloWsBWhTYCwZA/cmp2Ru47r6x4PvcoqU23hY66YRi5b3RK4axZa8SyTx20z70ADniWPd0PZqV6YgxlZsP1raO5STCZ0YkAjiLhukkcfArow/huz2Iyy2en6Pp2jed0rn7wHDLMntWWbZvxrh+pM/eeuylKMdIVV12W8V4Lx/afhn8tVfsCp6x4ktF+a75LrGSvYM3RkFr2jtyOuXeoGLZrhiSnYTSzhzmAkiod2LNxSuwttFipLfO94p6yNjXHLNzXZZtOXc4grjlKPkmqqbE1DdRvaLyvCtMYRF9qSA1NTHCPTdke4c08HUm3iLPZIeht0WY1f5Z8eHuyXevAAaAAMgNAF5WJvXp7sI8YqIREXCQREQETiGl6alE7B5UXH83mqyr2QHAgjMHQhU+50Zoqp0foHVh7QtFMvg83rKsfNHIiIrjCUraxevkzDTqOJ+VRXnohlxDBq8/AfpLOsFYzbhSnqWMtjKmWoeC6UzbuQA0GWR7T7Vacc4YxBiXF0ZbSObbI9yFk3Styazi52WeeeZPLkFokVotsMTIo7fShjGhrc4W8BoOSpalKW+Dap111KLW75MDw9fW2jFkV1hi6CmM7t+FpzDYnHVvfkDp6gv0Q1wc0OaQWkZgjmFQtpeDpLtR0s9jooutwvLXRxhrN9h58hoR7yrDgiO50+GqSmvUBhqqcGLIuDt5g806E8tPBdgnFtMj1Eo2RU15M822/3zbvqx/eK1Kwf3FbfqkX7gVE2p4ZvF8uVFNaqM1EccBY8iRrcjvE8yFfrRDJTWmigmbuyRU8bHjPPIhoBXYp82RtknTBJkDtQ/EW5/5X8Viy/BmB5MU0dRUsr2UwhkEe66Iuz0zz4ha1j231d1wnXUVBF01TL0e4zeAzykaTqdOAKidlljuVjtVZFdaY08kk4cxpe12Y3QM9CVyUeU+5Oq3hQ8ffSiYs2ey4cs7ri+5MqA2RrOjEJbx555lXLYt+KtV9ff/DjUvtGtVbeMMSUlth6aoMrHBgcBmAdeK+GzCzV9jw9NTXSn6CZ9W6QMLg7yS1gz0J5goo5Psdna50ep99M+xX/zYP12m+EatuKdmj75faq5R3URCoIJjfDvbpAA458NFD47wViGvxVU3K10wmimLHseyZrHMIaBrvEa5jkuP5F2mflbh/5Bn/2oZ3aaLd2MXGaTw1LDNoFhslNbRUOqOhBzkcMsySToOQ1WUbZvxrh+pM/eerls8oMV0lbVuxNJUugdEBEJqkS+VnyyJy0UPtOwre71iGKqtdCZ4BStYXCRjcnBzjlqR2hTn3h2RVTkL/VJf9K/dKzH9ot7Ki4VVdBSuyY2QSNOWY01GoUlssw1Ddqz5fraxs76acnq+pf0nEOeT7RlnmeehC1Ktt1PcbS+310YfDLEGPb2acR3g6hZphTDWKcK4o3oKM1Fve/oppGyta2SPPz8icwRx9o5rjhkl8okrlOuSWJ/6awiIrjAFP4apdH1Txx8ln2lQ1JTvqqhkMfFx1PYOZVzhiZBEyKMZNYMgqrZYsNnR1cpc38HuiIsx6gREQBERAFx3SibXUxZoJG6sPf2LsRdTx6RlFSWMor2uY9zHgtc05EHkV6qzXu2dZb08A+eaNR9Mfeq1w0K1wkpI8a6p1SxnhERSKgiIgCIiAIiIAiIgCIiAIiIAiIgCIp+x2sgtqqluvGNh+JXJSUVrLKqnZLEddlt/VIekkHz0g1/wjsUkiLG229Z7UIKEeKCIi4SCIiAIiIAiIgCiLvaBU5z0wAm9JvJ/wDNS6LsZOL1ELK42RyRRHNcxxa8FrgciDxC8K03yjhlpZJ3NyljbmHDn3FVZa4S5LTyLqnVLAiIpFIREQBERAEREAREQBERAERWHD1HCYBVObvS7xAJ4N9SjKXFaWVVOyXFHraLPkW1FY3Xi2M/E/cp1EWWUnJ6z2K6o1xyIREUSwIiIAiIgP/Z",
+
+      name: "Ather Energy",
+      location: "Chennai",
+      industry: "Electric Vehicles",
+      jobs: 20,
+    },
+    {
+      logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAclBMVEXOIin////KAADNGCHOICfZaGj89vbVUFTLAAvNGyP//PzcdnfNEhzoqqrxzM3MABD44uPRNTvz09TlnJ7jlpjMCBXvxMXSPUHmoaL02Nnrtbb67O3PKjDYX2LtvL3ghojTSE3WWFrefYDhjZDabnDSREbHn1g/AAAJJUlEQVR4nM2ceZ+yIBDHDcnE8EhF8+x+/2/xAVREA2v3aZPfH/vZLvvGMcwMI9bGQFn/9WnPiaI4yFrfPyZpmiZHvyzbLC6iyvkqVEUp2uNtf8ltMMp1Q0JI6LrSc1be7FM/C4rop4Q/gaqy9N6cDygEFAEjCK0lQYgwoZC4znfN9RhUn4aqgvJ6pj8+xPYrFhUcsjGj2yZZ5H0IKkqahw2I/UOYZzrshofLKXjN9QLKyVILhLR5/hNIgCECwL580ZWLUNHpgUP0IZ4RjIT5frEfF6CyBpCPNdFUCINdpp+TWqj4jPGfAPXCJM90raWBKrbgjxppFAK7+AdQ3g39aSsNwvikbCwVVHEGf91KvSA4qxpLAdV+p5k6YVy+A5V8q5k6QZC8hkrdrzJRKjd9BZV+t504FZhTzaCSb7cTp3KTJajy++3EqUCph4r/2xP4LRWOdVDe44u2YCp89jRQJ3ctJssCJzVUjFfqPKZJB45Q3m61zmPCOxVUBtZkoh2YPUM5+cddzJ8J5c4TVEvWZaJecvYEte6IYhpH1QBVrDyimEA0g9qv3lCWRa5TqGrtYc6E8moCVYZrEzGF7QRqv/bc4xr6r4Py1nFZ5oKuJ0EFBsw9JhBLUCcjeo8OqtsI5V0MmHtM9sUTUNHBiCFFB9UhElCZEQaBqVv/OFSyoss5FTgKqMaANaYT3gqoNf3gqVA9QFWGWCkm4PRQpphOJm4+GdTRmHFOofwe6mrMOKc24dRDbe21UUbZ2w7K2RmyyDChncOhoodJUI+IQxW1MWaKrn51waECc2wnyykEHGrteH0qFr1TKN8sKJ9DpQbZTstiuWIKdTXEF+7EIhoKtf2QQYc2IRgT+kdhYqDQi6sw54VCnXUGnW2nu0obhthu+vRjEJDmlPiln9zuNZj+TgLcUIhecynfa585lKW2nYhc/DhOc/J0BUhyPw6OZ/kVgn2x0+9U2YWMyCjcx9GoIkjPWD9imEdFodSBKKr73HY6p0JDdO2LfkLgNtvnDB7D9IF1tpmrOAHdKgJJB6V8DRTDFWYmA2LxJW3fD8hqn763uvetAZ6ZGPRBM5IhYFCeEkrembhPPk+k5HI3cSFQbdp5DX8R5SomCq2jAh6FclRQfQDWKZsMTCC9EvHPhr7ya6MD66LnPapeuiWXOsSW2kO3G3kHQHYj5NTyxmHf24e1z/JZUwE18YZtBKmhKgqlTCxyX2u8uvSWyRBxdnSSgXFAxafmNDakw1pYQHls6lWV9APU0572hLWJX0NV4wSED7n6ooMSI+oIQuyG447UxZagIl4qVN+Dzfh2JVRBoZSxzBRKysqQm/w8hxJzIuNWACHRVmxVlaD4j8JEQBdK805/o6X2XGZQmXC55GHeQ6FHb6P6TTAiRhHr9hkUM8qDSavOqv4DAYVq34ASQx1fJk9zKAs3rEurfZ8mIWK+lSooS+w4esqIhQ5RS+1OzaGG7p9tYXZQVpjfklM+pG7IUXzqufss2dDtlVAlg1K5U3OoqjNV6DwtMuqhLIRH10DaJGOJk0Uolf2kH7DU8bGAcvop3NlucT1nCiUrFD3sYKjsPrFY3FUt5b6Ginuz1A110DdUHGmh8FkszcnEeA5QcLjIxlFmNd3jS6jo3v/DFgV87h9cKx0UqUUHd5t1cyg0bsyqs5ocKlXlFkeoYRFk88Fthyd1UO52dGH2/NfOjGf4ENNAs86E6Wuour9IhKHYO2mBZkyB+8jUdj0goJyWSa6szJUuL0lfd189mMYrFsP8rIaCYGwFapPhFOpJSgP53pg6gH6xaslgzSvgqqCQ/P3FsNpqoXQbZxxq2U5FB9L0/9aX/p8bUUFhKLl6gSh61EFVtcbJ4ybhFRSy+mGQ+gMJUkDhXGKKa/G8BirIdYEdN57KOSBBQTIYu96OZi50N3Mo9yJFDpkUFiih4qs2cOiWmeUFmULZl2mkQiOCORQEV+k9pRyNjlBDiNXeLnAhKOcL8rLrwgzcNC6gPv28paDsZXnT+rnRJIia8OWSVu66LDt5DIrcJSY2W2dQyJV8B2cP7E4zKHXUpICKX7rDDArWksVjC9YUCkLJbXdOu6bTrovdJaj3cnPcHV4OHPj6RKTBGlB/HYYylBwIbjxHqLjgX0FF2hBrAoWlIIr5MFOoMZaeyXnYv4GqdMHoFEryzPmlZ1Da6vIA/AbK0YXtMyhRW9GZWpaE6KHQPJaQxVaSnw90T5fg4Dl2ppgH11D4Kg2fVINFryzIFyuNIhpDkf3w4D2oLsGhTAXxzDFT79gMwUCf3h4e8qADHXT9d3PZlwxexntZTDY0WNJM1dcI8W8aHBDotmysFxD1zPxh21lB+1A43rMcP2Qv4wvrXi95M7PaJ83U6UW7vpX+XsTrMLwf/astQhZAH+5J/9B2m/2TrkMBOalTP9m+WyPCEij6RCwiNG4ar0TjbfmhRV8cH0IbP0ssgJAlZ99Dote9m5iyPnEocwoAmFi6xNImr1YSSwyYumFk5NaakZuQkQlFgoMQS19aujzDSho2to0sATCqWAIPxRIm7deKshJl6LCSRAGO0iFeSaJUaYOMmX6I8/A/n9pF/n9J5W/m+AldmGFYSWU4llSaU3yaj8Wn3sUQm253WUNzC5qNqV+clH6bUiQPNhKUIRHN9HYCQ268INMbL4y8RcWMm3mGBI3Rtz152iqqr+n5BrH1b6UTw9z0mw51229fk+r2TDNvZDXyll+61hh4c7SZt5GvlxRauOHezKMJVjjsgjMtH+Jg5nEXZh4M8vUjVNA7R6iwzfJvHjYDnyt8lcfyxF88lmen2lZVH2B0+k5jEZi+fYARa6ydvsTiQ4IIbDW7z9pDsbL8/Z2n3wjbygOVlqE2TnsGqrsVPiB23FqjLFN/BUWHVrHPw+e7Cf4bKSSPk3Yz/BUUVdVeyQeOyBM8yA4BPi2csfYOFFN8a3LygZ6kfYYfTbLYRm9DUUWZv60BcLGNfnPMoY1DAMBhX755AOMPDoR04uN1u8trTOkIfnXKIENh50ESmJ+be1q+0UC/gerIoiLIyuS6PVuTkzPZ0ZmTgzNJfbmfEj8L4ugH51P+Dmoiz6kKdsZo2R0yejz6JYUoKuetsyj/COqv9A8r04P+L46G6wAAAABJRU5ErkJggg==",
+      name: "M2P Fintech",
+      location: "Chennai",
+      industry: "Financial Technology",
+      jobs: 18,
+    },
+    {
+      logo: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAlAMBIgACEQEDEQH/xAAaAAEAAgMBAAAAAAAAAAAAAAAABAUCAwYH/8QALhAAAQQCAQIEBQQDAQAAAAAAAAECAwQFERIGITFBUWETFCJxgSMyQlKRodEW/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwUE/8QAGhEBAAMAAwAAAAAAAAAAAAAAAAECERIxQf/aAAwDAQACEQMRAD8A8hAB6z6gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANAAUAAQAAAABQABAAAAAAAAgJXGNwDshUbYblsPWRVVPh27rYnppfNqmizh7EFCW8j4JqsVn5Z0kEnNOfHafhU3pS/wCmXIzFRo7/AMZvm7tl43LOnfz0nh6exo6cnpJk8nhMzbrxYzIorZLFddxQyNdzZIz2Rdp9lOc2mNY2VZF07kZreKqMjjWxlWJJWZz78VVURXeifS5fsgi6fyEnUT8F8Jjb7JJGK166btiK5e+vBUaqovntDoX9Q0nX85nGPSOZkbaGKrov1xQr9CvT3SNF/LvMsamXwVjqvpzMw3VhRkEtS4t1USRFZC5jJHq3t9SORN+qGedk2XBYjHT5e42rU4/FdG96c3aTTWq5f9IKGPnyEVyWujOFOutmXkutMRzW9vVduQv8JDW6VzNC7byuOuV3c4JfkJlkfG17Far1arU8N7Mo4qPTWJyyNzFLJWchW+TgjpK5yNYrmudI9XInHsxERO/dfyam8+LqBY6adBVfYXNYGRGM5/Divtc93sievsZ0ek7WQjhWnksPJPM3bKqXWpM5f68f7exb5REkxEzOfQrP098qjHNsdv6rr9xljMh0/R6nxcyxVkYmNhRlhN8Ktviv6j2prlpdb2Z5Ww2XEPY6NzmParXNVUci+KKnkSruNs0WVn2Y+KWY+cffy9/Re6f5M6iRT5pFyM7FiWZzp5f4v8VXX30uvuWVrJ08pjrbJ3yMtJL8xF8RU4p5cG67/t14+h3r0za1omMUdmH4E74viRycf5xu21e3kpqJ+dkhly1mSu5ronK3irfD9qEAOlZ2AAEUAAAAAAAAG1AAb7aAADYTsvggABO3/RsABvfj4jYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/9k=",
+      name: "Evaluer AI",
+      location: "Cochin",
+      industry: "Artificial Intelligence",
+      jobs: 7,
+    },
+  ];
+
+  return (
+    <div className="companies-page">
+
+      <div className="companies-header">
+        <h1>Explore Companies</h1>
+
+        <p>
+          Discover companies and find the right opportunity for your career.
+        </p>
+      </div>
+
+      <div className="companies-container">
+
+        {companies.map((company, index) => (
+          <div className="company-card" key={index}>
+
+            <img
+              src={company.logo}
+              alt={company.name}
+              className="company-logo"
+            />
+
+            <h2>{company.name}</h2>
+
+            <p>📍 {company.location}</p>
+
+            <p>🏢 {company.industry}</p>
+
+            <p>💼 {company.jobs} Jobs</p>
+
+            <Link to={`/jobs?company=${encodeURIComponent(company.name)}`}>
+               <button className="view-jobs-btn">
+                      View Jobs
+                </button>
+            </Link>
+          </div>
+        ))}
+
+      </div>
+
+    </div>
+  );
+}
+
+export default Companies;
