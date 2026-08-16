@@ -2,9 +2,13 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import mysql.connector
+from mysql.connector import Error
 import os
 
+# CAREERGO FLASK APPLICATION
 app = Flask(__name__)
+
+# CORS CONFIGURATION
 
 CORS(
     app,
@@ -12,17 +16,176 @@ CORS(
         r"/api/*": {
             "origins": "*"
         }
-    }
+    },
+    supports_credentials=False
 )
 
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "jobs",
-    "password": "12345",
-    "database": "careergo_db"
+    "host": os.getenv("DB_HOST"),
+    "port": int(os.getenv("DB_PORT", "3306")),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME")
 }
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Optional SSL configuration
+DB_SSL_CA = os.getenv("DB_SSL_CA", "").strip()
+DB_SSL_DISABLED = os.getenv(
+    "DB_SSL_DISABLED",
+    "false"
+).lower() == "true"
+
+
+def get_db_connection():
+   
+    try:
+
+        # ---------------------------------------------
+        # Check environment variables
+        # ---------------------------------------------
+
+        if not DB_HOST:
+            print("DATABASE ERROR: DB_HOST is missing")
+            return None
+
+        if not DB_USER:
+            print("DATABASE ERROR: DB_USER is missing")
+            return None
+
+        if not DB_NAME:
+            print("DATABASE ERROR: DB_NAME is missing")
+            return None
+
+        try:
+            port = int(DB_PORT)
+        except ValueError:
+            print("DATABASE ERROR: DB_PORT must be a number")
+            return None
+
+        # ---------------------------------------------
+        # Basic connection configuration
+        # ---------------------------------------------
+
+        config = {
+            "host": DB_HOST,
+            "port": port,
+            "user": DB_USER,
+            "password": DB_PASSWORD or "",
+            "database": DB_NAME,
+            "connection_timeout": 30,
+            "autocommit": False
+        }
+
+        # ---------------------------------------------
+        # SSL
+        # ---------------------------------------------
+
+        if DB_SSL_CA:
+
+            config["ssl_ca"] = DB_SSL_CA
+            config["ssl_verify_cert"] = True
+
+        elif DB_SSL_DISABLED:
+
+            config["ssl_disabled"] = True
+
+        # ---------------------------------------------
+        # Connect
+        # ---------------------------------------------
+
+        connection = mysql.connector.connect(**config)
+
+        if connection.is_connected():
+
+            print("==============================================")
+            print("MYSQL DATABASE CONNECTED")
+            print("==============================================")
+            print("HOST:", DB_HOST)
+            print("PORT:", port)
+            print("DATABASE:", DB_NAME)
+            print("USER:", DB_USER)
+            print("==============================================")
+
+            return connection
+
+        print("MYSQL CONNECTION FAILED")
+
+        return None
+
+    except mysql.connector.Error as e:
+
+        print("==============================================")
+        print("MYSQL CONNECTION ERROR")
+        print(e)
+        print("==============================================")
+
+        return None
+
+    except Exception as e:
+
+        print("==============================================")
+        print("DATABASE CONNECTION ERROR")
+        print(e)
+        print("==============================================")
+
+        return None
+
+
+# =========================================================
+# DATABASE TEST
+# =========================================================
+
+def test_database_connection():
+
+    db = None
+
+    try:
+
+        db = get_db_connection()
+
+        if db:
+
+            cursor = db.cursor()
+
+            cursor.execute("SELECT 1")
+
+            result = cursor.fetchone()
+
+            print("DATABASE TEST RESULT:", result)
+
+            cursor.close()
+
+            print("DATABASE TEST SUCCESS")
+
+            return True
+
+        print("DATABASE TEST FAILED")
+
+        return False
+
+    except Exception as e:
+
+        print("DATABASE TEST ERROR:", e)
+
+        return False
+
+    finally:
+
+        if db:
+
+            try:
+                db.close()
+            except Exception:
+                pass
+
+
+# =========================================================
+# FILE UPLOAD CONFIGURATION
+# =========================================================
+
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
 UPLOAD_FOLDER = os.path.join(
     BASE_DIR,
@@ -36,49 +199,21 @@ ALLOWED_RESUME_EXTENSIONS = {
     "docx"
 }
 
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+app.config["MAX_CONTENT_LENGTH"] = (
+    10 * 1024 * 1024
+)
+
 os.makedirs(
     UPLOAD_FOLDER,
     exist_ok=True
 )
 
-def get_db_connection():
 
-    try:
-
-        connection = mysql.connector.connect(
-            host=DB_CONFIG["host"],
-            user=DB_CONFIG["user"],
-            password=DB_CONFIG["password"],
-            database=DB_CONFIG["database"],
-            autocommit=False
-        )
-
-        return connection
-
-    except mysql.connector.Error as e:
-
-        print("MYSQL CONNECTION ERROR:", e)
-
-        return None
-
-def test_database_connection():
-
-    db = get_db_connection()
-
-    if db:
-
-        print("===================================")
-        print("MYSQL DATABASE CONNECTED")
-        print("DATABASE:", DB_CONFIG["database"])
-        print("===================================")
-
-        db.close()
-
-    else:
-
-        print("===================================")
-        print("MYSQL DATABASE CONNECTION FAILED")
-        print("===================================")
+# =========================================================
+# HELPER FUNCTIONS
+# =========================================================
 
 def allowed_resume_file(filename):
 
@@ -95,19 +230,24 @@ def allowed_resume_file(filename):
 
     return extension in ALLOWED_RESUME_EXTENSIONS
 
+
 def get_resume_file_path(resume_path):
 
     if not resume_path:
         return None
 
     if os.path.isabs(resume_path):
-
         return resume_path
 
     return os.path.join(
         BASE_DIR,
         resume_path
     )
+
+
+# =========================================================
+# HOME
+# =========================================================
 
 @app.route("/", methods=["GET"])
 def home():
@@ -117,7 +257,70 @@ def home():
         "status": "success"
     }), 200
 
-@app.route("/api/register", methods=["POST"])
+
+# =========================================================
+# HEALTH CHECK
+# =========================================================
+
+@app.route("/health", methods=["GET"])
+def health():
+
+    db = None
+
+    try:
+
+        db = get_db_connection()
+
+        if not db:
+
+            return jsonify({
+                "status": "database_error",
+                "database_connected": False,
+                "message": "Unable to connect to MySQL"
+            }), 500
+
+        cursor = db.cursor()
+
+        cursor.execute(
+            "SELECT 1"
+        )
+
+        cursor.fetchone()
+
+        cursor.close()
+
+        return jsonify({
+            "status": "ok",
+            "database_connected": True,
+            "message": "CareerGo backend and database are working"
+        }), 200
+
+    except Exception as e:
+
+        return jsonify({
+            "status": "database_error",
+            "database_connected": False,
+            "message": str(e)
+        }), 500
+
+    finally:
+
+        if db:
+
+            try:
+                db.close()
+            except Exception:
+                pass
+
+
+# =========================================================
+# JOB SEEKER REGISTER
+# =========================================================
+
+@app.route(
+    "/api/register",
+    methods=["POST"]
+)
 def register():
 
     db = None
@@ -125,7 +328,9 @@ def register():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
@@ -140,7 +345,8 @@ def register():
         if not name or not email or not password:
 
             return jsonify({
-                "message": "Name, email and password are required"
+                "message":
+                "Name, email and password are required"
             }), 400
 
         db = get_db_connection()
@@ -148,7 +354,8 @@ def register():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
         cursor = db.cursor()
@@ -167,7 +374,8 @@ def register():
         if existing:
 
             return jsonify({
-                "message": "Email already registered"
+                "message":
+                "Email already registered"
             }), 409
 
         cursor.execute(
@@ -190,7 +398,8 @@ def register():
         db.commit()
 
         return jsonify({
-            "message": "Registration successful"
+            "message":
+            "Registration successful"
         }), 201
 
     except Exception as e:
@@ -198,11 +407,16 @@ def register():
         if db:
             db.rollback()
 
-        print("REGISTER ERROR:", e)
+        print(
+            "REGISTER ERROR:",
+            e
+        )
 
         return jsonify({
-            "message": "Registration failed",
-            "error": str(e)
+            "message":
+            "Registration failed",
+            "error":
+            str(e)
         }), 500
 
     finally:
@@ -213,7 +427,15 @@ def register():
         if db:
             db.close()
 
-@app.route("/api/login", methods=["POST"])
+
+# =========================================================
+# JOB SEEKER LOGIN
+# =========================================================
+
+@app.route(
+    "/api/login",
+    methods=["POST"]
+)
 def login():
 
     db = None
@@ -221,12 +443,15 @@ def login():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
         email = data.get("email")
@@ -235,7 +460,8 @@ def login():
         if not email or not password:
 
             return jsonify({
-                "message": "Email and password are required"
+                "message":
+                "Email and password are required"
             }), 400
 
         db = get_db_connection()
@@ -243,10 +469,13 @@ def login():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -267,42 +496,46 @@ def login():
         if not user:
 
             return jsonify({
-                "message": "User account not found"
+                "message":
+                "User account not found"
             }), 404
 
         if user["password"] != password:
 
             return jsonify({
-                "message": "Invalid password"
+                "message":
+                "Invalid password"
             }), 401
 
         return jsonify({
-
-            "message": "Login successful",
-
+            "message":
+            "Login successful",
             "user": {
-
-                "id": user["id"],
-
-                "name": user["name"],
-
-                "email": user["email"],
-
-                "role": "user",
-
-                "resume": user.get("resume")
-
+                "id":
+                user["id"],
+                "name":
+                user["name"],
+                "email":
+                user["email"],
+                "role":
+                "user",
+                "resume":
+                user.get("resume")
             }
-
         }), 200
 
     except Exception as e:
 
-        print("LOGIN ERROR:", e)
+        print(
+            "LOGIN ERROR:",
+            e
+        )
 
         return jsonify({
-            "message": "Login failed",
-            "error": str(e)
+            "message":
+            "Login failed",
+            "error":
+            str(e)
         }), 500
 
     finally:
@@ -313,7 +546,15 @@ def login():
         if db:
             db.close()
 
-@app.route("/api/company/register", methods=["POST"])
+
+# =========================================================
+# COMPANY REGISTER
+# =========================================================
+
+@app.route(
+    "/api/company/register",
+    methods=["POST"]
+)
 def company_register():
 
     db = None
@@ -321,12 +562,15 @@ def company_register():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
         name = data.get("name")
@@ -336,7 +580,8 @@ def company_register():
         if not name or not email or not password:
 
             return jsonify({
-                "message": "Name, email and password are required"
+                "message":
+                "Name, email and password are required"
             }), 400
 
         db = get_db_connection()
@@ -344,7 +589,8 @@ def company_register():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
         cursor = db.cursor()
@@ -363,7 +609,8 @@ def company_register():
         if existing:
 
             return jsonify({
-                "message": "Email already registered"
+                "message":
+                "Email already registered"
             }), 409
 
         cursor.execute(
@@ -388,7 +635,8 @@ def company_register():
         db.commit()
 
         return jsonify({
-            "message": "Company registered successfully"
+            "message":
+            "Company registered successfully"
         }), 201
 
     except Exception as e:
@@ -396,11 +644,16 @@ def company_register():
         if db:
             db.rollback()
 
-        print("COMPANY REGISTER ERROR:", e)
+        print(
+            "COMPANY REGISTER ERROR:",
+            e
+        )
 
         return jsonify({
-            "message": "Company registration failed",
-            "error": str(e)
+            "message":
+            "Company registration failed",
+            "error":
+            str(e)
         }), 500
 
     finally:
@@ -411,7 +664,15 @@ def company_register():
         if db:
             db.close()
 
-@app.route("/api/company/login", methods=["POST"])
+
+# =========================================================
+# COMPANY LOGIN
+# =========================================================
+
+@app.route(
+    "/api/company/login",
+    methods=["POST"]
+)
 def company_login():
 
     db = None
@@ -419,12 +680,15 @@ def company_login():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
         email = data.get("email")
@@ -433,7 +697,8 @@ def company_login():
         if not email or not password:
 
             return jsonify({
-                "message": "Email and password are required"
+                "message":
+                "Email and password are required"
             }), 400
 
         db = get_db_connection()
@@ -441,10 +706,13 @@ def company_login():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -466,40 +734,44 @@ def company_login():
         if not company:
 
             return jsonify({
-                "message": "Company account not found"
+                "message":
+                "Company account not found"
             }), 404
 
         if company["password"] != password:
 
             return jsonify({
-                "message": "Invalid password"
+                "message":
+                "Invalid password"
             }), 401
 
         return jsonify({
-
-            "message": "Company login successful",
-
+            "message":
+            "Company login successful",
             "company": {
-
-                "id": company["id"],
-
-                "name": company["name"],
-
-                "email": company["email"],
-
-                "role": company["role"]
-
+                "id":
+                company["id"],
+                "name":
+                company["name"],
+                "email":
+                company["email"],
+                "role":
+                company["role"]
             }
-
         }), 200
 
     except Exception as e:
 
-        print("COMPANY LOGIN ERROR:", e)
+        print(
+            "COMPANY LOGIN ERROR:",
+            e
+        )
 
         return jsonify({
-            "message": "Login failed",
-            "error": str(e)
+            "message":
+            "Login failed",
+            "error":
+            str(e)
         }), 500
 
     finally:
@@ -510,7 +782,15 @@ def company_login():
         if db:
             db.close()
 
-@app.route("/api/admin/login", methods=["POST"])
+
+# =========================================================
+# ADMIN LOGIN
+# =========================================================
+
+@app.route(
+    "/api/admin/login",
+    methods=["POST"]
+)
 def admin_login():
 
     db = None
@@ -518,12 +798,15 @@ def admin_login():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
         email = data.get("email")
@@ -532,7 +815,8 @@ def admin_login():
         if not email or not password:
 
             return jsonify({
-                "message": "Email and password are required"
+                "message":
+                "Email and password are required"
             }), 400
 
         db = get_db_connection()
@@ -540,10 +824,13 @@ def admin_login():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -565,40 +852,44 @@ def admin_login():
         if not admin:
 
             return jsonify({
-                "message": "Admin account not found"
+                "message":
+                "Admin account not found"
             }), 404
 
         if admin["password"] != password:
 
             return jsonify({
-                "message": "Invalid admin password"
+                "message":
+                "Invalid admin password"
             }), 401
 
         return jsonify({
-
-            "message": "Admin login successful",
-
+            "message":
+            "Admin login successful",
             "admin": {
-
-                "id": admin["id"],
-
-                "name": admin["name"],
-
-                "email": admin["email"],
-
-                "role": admin["role"]
-
+                "id":
+                admin["id"],
+                "name":
+                admin["name"],
+                "email":
+                admin["email"],
+                "role":
+                admin["role"]
             }
-
         }), 200
 
     except Exception as e:
 
-        print("ADMIN LOGIN ERROR:", e)
+        print(
+            "ADMIN LOGIN ERROR:",
+            e
+        )
 
         return jsonify({
-            "message": "Admin login failed",
-            "error": str(e)
+            "message":
+            "Admin login failed",
+            "error":
+            str(e)
         }), 500
 
     finally:
@@ -609,7 +900,15 @@ def admin_login():
         if db:
             db.close()
 
-@app.route("/api/admin/dashboard", methods=["GET"])
+
+# =========================================================
+# ADMIN DASHBOARD
+# =========================================================
+
+@app.route(
+    "/api/admin/dashboard",
+    methods=["GET"]
+)
 def admin_dashboard():
 
     db = None
@@ -622,10 +921,13 @@ def admin_dashboard():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -634,7 +936,10 @@ def admin_dashboard():
             """
         )
 
-        users = cursor.fetchone()["total"] or 0
+        users = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         cursor.execute(
             """
@@ -644,7 +949,10 @@ def admin_dashboard():
             """
         )
 
-        companies = cursor.fetchone()["total"] or 0
+        companies = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         cursor.execute(
             """
@@ -653,9 +961,10 @@ def admin_dashboard():
             """
         )
 
-        jobs = cursor.fetchone()["total"] or 0
-
-        active_jobs = jobs
+        jobs = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         cursor.execute(
             """
@@ -664,7 +973,10 @@ def admin_dashboard():
             """
         )
 
-        applications = cursor.fetchone()["total"] or 0
+        applications = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         cursor.execute(
             """
@@ -675,7 +987,10 @@ def admin_dashboard():
             """
         )
 
-        pending_applications = cursor.fetchone()["total"] or 0
+        pending_applications = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         cursor.execute(
             """
@@ -686,7 +1001,10 @@ def admin_dashboard():
             """
         )
 
-        accepted_applications = cursor.fetchone()["total"] or 0
+        accepted_applications = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         cursor.execute(
             """
@@ -697,47 +1015,44 @@ def admin_dashboard():
             """
         )
 
-        rejected_applications = cursor.fetchone()["total"] or 0
+        rejected_applications = (
+            cursor.fetchone()["total"]
+            or 0
+        )
 
         return jsonify({
-
             "stats": {
-
-                "users": users,
-
-                "companies": companies,
-
-                "jobs": jobs,
-
-                "active_jobs": active_jobs,
-
-                "applications": applications,
-
+                "users":
+                users,
+                "companies":
+                companies,
+                "jobs":
+                jobs,
+                "active_jobs":
+                jobs,
+                "applications":
+                applications,
                 "pending_applications":
-                    pending_applications,
-
+                pending_applications,
                 "accepted_applications":
-                    accepted_applications,
-
+                accepted_applications,
                 "rejected_applications":
-                    rejected_applications
-
+                rejected_applications
             }
-
         }), 200
 
     except Exception as e:
 
-        print("ADMIN DASHBOARD ERROR:", e)
+        print(
+            "ADMIN DASHBOARD ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get admin dashboard",
-
+            "Unable to get admin dashboard",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -748,7 +1063,15 @@ def admin_dashboard():
         if db:
             db.close()
 
-@app.route("/api/jobs", methods=["POST"])
+
+# =========================================================
+# CREATE JOB
+# =========================================================
+
+@app.route(
+    "/api/jobs",
+    methods=["POST"]
+)
 def create_job():
 
     db = None
@@ -756,62 +1079,93 @@ def create_job():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
-        company_id = data.get("company_id")
-        title = data.get("title")
-        description = data.get("description")
-        location = data.get("location")
-        salary = data.get("salary")
-        job_type = data.get("job_type") or data.get("type")
-        skills = data.get("skills")
+        company_id = data.get(
+            "company_id"
+        )
+
+        title = data.get(
+            "title"
+        )
+
+        description = data.get(
+            "description"
+        )
+
+        location = data.get(
+            "location"
+        )
+
+        salary = data.get(
+            "salary"
+        )
+
+        job_type = (
+            data.get("job_type")
+            or data.get("type")
+        )
+
+        skills = data.get(
+            "skills"
+        )
 
         if not company_id:
 
             return jsonify({
-                "message": "Company ID is required"
+                "message":
+                "Company ID is required"
             }), 400
 
         if not title:
 
             return jsonify({
-                "message": "Job title is required"
+                "message":
+                "Job title is required"
             }), 400
 
         if not description:
 
             return jsonify({
-                "message": "Job description is required"
+                "message":
+                "Job description is required"
             }), 400
 
         if not location:
 
             return jsonify({
-                "message": "Location is required"
+                "message":
+                "Location is required"
             }), 400
 
         if not salary:
 
             return jsonify({
-                "message": "Salary is required"
+                "message":
+                "Salary is required"
             }), 400
 
         if not job_type:
 
             return jsonify({
-                "message": "Job type is required"
+                "message":
+                "Job type is required"
             }), 400
 
         if not skills:
 
             return jsonify({
-                "message": "Skills are required"
+                "message":
+                "Skills are required"
             }), 400
 
         db = get_db_connection()
@@ -819,7 +1173,8 @@ def create_job():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
         cursor = db.cursor()
@@ -839,7 +1194,8 @@ def create_job():
         if not company:
 
             return jsonify({
-                "message": "Company not found"
+                "message":
+                "Company not found"
             }), 404
 
         cursor.execute(
@@ -871,13 +1227,10 @@ def create_job():
         db.commit()
 
         return jsonify({
-
             "message":
-                "Job posted successfully",
-
+            "Job posted successfully",
             "job_id":
-                cursor.lastrowid
-
+            cursor.lastrowid
         }), 201
 
     except Exception as e:
@@ -885,16 +1238,16 @@ def create_job():
         if db:
             db.rollback()
 
-        print("CREATE JOB ERROR:", e)
+        print(
+            "CREATE JOB ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Failed to post job",
-
+            "Failed to post job",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -905,7 +1258,15 @@ def create_job():
         if db:
             db.close()
 
-@app.route("/api/jobs", methods=["GET"])
+
+# =========================================================
+# GET ALL JOBS
+# =========================================================
+
+@app.route(
+    "/api/jobs",
+    methods=["GET"]
+)
 def get_jobs():
 
     db = None
@@ -918,10 +1279,13 @@ def get_jobs():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -934,15 +1298,11 @@ def get_jobs():
                 jobs.salary,
                 jobs.type,
                 jobs.skills,
-
                 users.name AS company_name,
                 users.email AS company_email
-
             FROM jobs
-
             LEFT JOIN users
-            ON jobs.company = users.id
-
+                ON jobs.company = users.id
             ORDER BY jobs.id DESC
             """
         )
@@ -950,21 +1310,22 @@ def get_jobs():
         jobs = cursor.fetchall()
 
         return jsonify({
-            "jobs": jobs
+            "jobs":
+            jobs
         }), 200
 
     except Exception as e:
 
-        print("GET JOBS ERROR:", e)
+        print(
+            "GET JOBS ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get jobs",
-
+            "Unable to get jobs",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -974,6 +1335,11 @@ def get_jobs():
 
         if db:
             db.close()
+
+
+# =========================================================
+# GET COMPANY JOBS
+# =========================================================
 
 @app.route(
     "/api/company/jobs/<int:company_id>",
@@ -991,10 +1357,13 @@ def get_company_jobs(company_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -1007,17 +1376,12 @@ def get_company_jobs(company_id):
                 jobs.salary,
                 jobs.type,
                 jobs.skills,
-
                 users.name AS company_name,
                 users.email AS company_email
-
             FROM jobs
-
             LEFT JOIN users
-            ON jobs.company = users.id
-
+                ON jobs.company = users.id
             WHERE jobs.company = %s
-
             ORDER BY jobs.id DESC
             """,
             (company_id,)
@@ -1026,21 +1390,22 @@ def get_company_jobs(company_id):
         jobs = cursor.fetchall()
 
         return jsonify({
-            "jobs": jobs
+            "jobs":
+            jobs
         }), 200
 
     except Exception as e:
 
-        print("COMPANY JOBS ERROR:", e)
+        print(
+            "COMPANY JOBS ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get company jobs",
-
+            "Unable to get company jobs",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1050,6 +1415,11 @@ def get_company_jobs(company_id):
 
         if db:
             db.close()
+
+
+# =========================================================
+# GET SINGLE JOB
+# =========================================================
 
 @app.route(
     "/api/jobs/<int:job_id>",
@@ -1067,10 +1437,13 @@ def get_job(job_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -1083,15 +1456,11 @@ def get_job(job_id):
                 jobs.salary,
                 jobs.type,
                 jobs.skills,
-
                 users.name AS company_name,
                 users.email AS company_email
-
             FROM jobs
-
             LEFT JOIN users
-            ON jobs.company = users.id
-
+                ON jobs.company = users.id
             WHERE jobs.id = %s
             """,
             (job_id,)
@@ -1102,25 +1471,27 @@ def get_job(job_id):
         if not job:
 
             return jsonify({
-                "message": "Job not found"
+                "message":
+                "Job not found"
             }), 404
 
         return jsonify({
-            "job": job
+            "job":
+            job
         }), 200
 
     except Exception as e:
 
-        print("GET JOB ERROR:", e)
+        print(
+            "GET JOB ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get job",
-
+            "Unable to get job",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1130,6 +1501,11 @@ def get_job(job_id):
 
         if db:
             db.close()
+
+
+# =========================================================
+# UPDATE JOB
+# =========================================================
 
 @app.route(
     "/api/jobs/<int:job_id>",
@@ -1142,20 +1518,41 @@ def update_job(job_id):
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
-        title = data.get("title")
-        location = data.get("location")
-        salary = data.get("salary")
-        job_type = data.get("type") or data.get("job_type")
-        description = data.get("description")
-        skills = data.get("skills")
+        title = data.get(
+            "title"
+        )
+
+        location = data.get(
+            "location"
+        )
+
+        salary = data.get(
+            "salary"
+        )
+
+        job_type = (
+            data.get("type")
+            or data.get("job_type")
+        )
+
+        description = data.get(
+            "description"
+        )
+
+        skills = data.get(
+            "skills"
+        )
 
         if (
             not title
@@ -1167,7 +1564,8 @@ def update_job(job_id):
         ):
 
             return jsonify({
-                "message": "All job fields are required"
+                "message":
+                "All job fields are required"
             }), 400
 
         db = get_db_connection()
@@ -1175,7 +1573,8 @@ def update_job(job_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
         cursor = db.cursor()
@@ -1192,13 +1591,13 @@ def update_job(job_id):
         if not cursor.fetchone():
 
             return jsonify({
-                "message": "Job not found"
+                "message":
+                "Job not found"
             }), 404
 
         cursor.execute(
             """
             UPDATE jobs
-
             SET
                 title = %s,
                 location = %s,
@@ -1206,7 +1605,6 @@ def update_job(job_id):
                 type = %s,
                 description = %s,
                 skills = %s
-
             WHERE id = %s
             """,
             (
@@ -1223,7 +1621,8 @@ def update_job(job_id):
         db.commit()
 
         return jsonify({
-            "message": "Job updated successfully"
+            "message":
+            "Job updated successfully"
         }), 200
 
     except Exception as e:
@@ -1231,16 +1630,16 @@ def update_job(job_id):
         if db:
             db.rollback()
 
-        print("UPDATE JOB ERROR:", e)
+        print(
+            "UPDATE JOB ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Failed to update job",
-
+            "Failed to update job",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1250,6 +1649,11 @@ def update_job(job_id):
 
         if db:
             db.close()
+
+
+# =========================================================
+# DELETE JOB
+# =========================================================
 
 @app.route(
     "/api/jobs/<int:job_id>",
@@ -1267,10 +1671,27 @@ def delete_job(job_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
         cursor = db.cursor()
+
+        cursor.execute(
+            """
+            SELECT id
+            FROM jobs
+            WHERE id = %s
+            """,
+            (job_id,)
+        )
+
+        if not cursor.fetchone():
+
+            return jsonify({
+                "message":
+                "Job not found"
+            }), 404
 
         cursor.execute(
             """
@@ -1288,18 +1709,11 @@ def delete_job(job_id):
             (job_id,)
         )
 
-        if cursor.rowcount == 0:
-
-            db.rollback()
-
-            return jsonify({
-                "message": "Job not found"
-            }), 404
-
         db.commit()
 
         return jsonify({
-            "message": "Job deleted successfully"
+            "message":
+            "Job deleted successfully"
         }), 200
 
     except Exception as e:
@@ -1307,16 +1721,16 @@ def delete_job(job_id):
         if db:
             db.rollback()
 
-        print("DELETE JOB ERROR:", e)
+        print(
+            "DELETE JOB ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Failed to delete job",
-
+            "Failed to delete job",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1326,6 +1740,11 @@ def delete_job(job_id):
 
         if db:
             db.close()
+
+
+# =========================================================
+# CREATE APPLICATION
+# =========================================================
 
 @app.route(
     "/api/applications",
@@ -1338,27 +1757,37 @@ def create_application():
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
-        job_id = data.get("job_id")
-        user_id = data.get("user_id")
+        job_id = data.get(
+            "job_id"
+        )
+
+        user_id = data.get(
+            "user_id"
+        )
 
         if not job_id:
 
             return jsonify({
-                "message": "Job ID is required"
+                "message":
+                "Job ID is required"
             }), 400
 
         if not user_id:
 
             return jsonify({
-                "message": "User ID is required"
+                "message":
+                "User ID is required"
             }), 400
 
         db = get_db_connection()
@@ -1366,10 +1795,13 @@ def create_application():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -1383,7 +1815,8 @@ def create_application():
         if not cursor.fetchone():
 
             return jsonify({
-                "message": "Job not found"
+                "message":
+                "Job not found"
             }), 404
 
         cursor.execute(
@@ -1398,7 +1831,8 @@ def create_application():
         if not cursor.fetchone():
 
             return jsonify({
-                "message": "User not found"
+                "message":
+                "User not found"
             }), 404
 
         cursor.execute(
@@ -1407,9 +1841,7 @@ def create_application():
                 id,
                 status,
                 applied_at
-
             FROM applications
-
             WHERE job_id = %s
             AND user_id = %s
             """,
@@ -1424,19 +1856,14 @@ def create_application():
         if existing:
 
             return jsonify({
-
                 "message":
-                    "You have already applied for this job",
-
+                "You have already applied for this job",
                 "already_applied":
-                    True,
-
+                True,
                 "applied":
-                    True,
-
+                True,
                 "application":
-                    existing
-
+                existing
             }), 409
 
         cursor.execute(
@@ -1447,9 +1874,7 @@ def create_application():
                 user_id,
                 status
             )
-
-            VALUES
-            (%s, %s, %s)
+            VALUES (%s, %s, %s)
             """,
             (
                 job_id,
@@ -1461,19 +1886,14 @@ def create_application():
         db.commit()
 
         return jsonify({
-
             "message":
-                "Application submitted successfully",
-
+            "Application submitted successfully",
             "application_id":
-                cursor.lastrowid,
-
+            cursor.lastrowid,
             "already_applied":
-                True,
-
+            True,
             "applied":
-                True
-
+            True
         }), 201
 
     except Exception as e:
@@ -1481,16 +1901,16 @@ def create_application():
         if db:
             db.rollback()
 
-        print("APPLICATION ERROR:", e)
+        print(
+            "APPLICATION ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Failed to submit application",
-
+            "Failed to submit application",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1501,11 +1921,19 @@ def create_application():
         if db:
             db.close()
 
+
+# =========================================================
+# CHECK APPLICATION
+# =========================================================
+
 @app.route(
     "/api/applications/check/<int:job_id>/<int:user_id>",
     methods=["GET"]
 )
-def check_application(job_id, user_id):
+def check_application(
+    job_id,
+    user_id
+):
 
     db = None
     cursor = None
@@ -1517,10 +1945,13 @@ def check_application(job_id, user_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -1530,14 +1961,10 @@ def check_application(job_id, user_id):
                 applications.user_id,
                 applications.status,
                 applications.applied_at,
-
                 jobs.title AS job_title
-
             FROM applications
-
             INNER JOIN jobs
-            ON applications.job_id = jobs.id
-
+                ON applications.job_id = jobs.id
             WHERE applications.job_id = %s
             AND applications.user_id = %s
             """,
@@ -1552,43 +1979,35 @@ def check_application(job_id, user_id):
         if application:
 
             return jsonify({
-
                 "applied":
-                    True,
-
+                True,
                 "already_applied":
-                    True,
-
+                True,
                 "application":
-                    application
-
+                application
             }), 200
 
         return jsonify({
-
             "applied":
-                False,
-
+            False,
             "already_applied":
-                False,
-
+            False,
             "application":
-                None
-
+            None
         }), 200
 
     except Exception as e:
 
-        print("CHECK APPLICATION ERROR:", e)
+        print(
+            "CHECK APPLICATION ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to check application",
-
+            "Unable to check application",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1598,6 +2017,11 @@ def check_application(job_id, user_id):
 
         if db:
             db.close()
+
+
+# =========================================================
+# GET ALL APPLICATIONS
+# =========================================================
 
 @app.route(
     "/api/applications",
@@ -1615,15 +2039,17 @@ def get_applications():
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
             SELECT
-
                 applications.id,
                 applications.job_id,
                 applications.user_id,
@@ -1635,23 +2061,31 @@ def get_applications():
                 jobs.salary,
                 jobs.type,
 
-                applicant.name AS applicant_name,
-                applicant.email AS applicant_email,
-                applicant.resume AS applicant_resume,
+                applicant.name
+                    AS applicant_name,
 
-                company.id AS company_id,
-                company.name AS company_name
+                applicant.email
+                    AS applicant_email,
+
+                applicant.resume
+                    AS applicant_resume,
+
+                company.id
+                    AS company_id,
+
+                company.name
+                    AS company_name
 
             FROM applications
 
             LEFT JOIN jobs
-            ON applications.job_id = jobs.id
+                ON applications.job_id = jobs.id
 
             LEFT JOIN job_seekers AS applicant
-            ON applications.user_id = applicant.id
+                ON applications.user_id = applicant.id
 
             LEFT JOIN users AS company
-            ON jobs.company = company.id
+                ON jobs.company = company.id
 
             ORDER BY applications.id DESC
             """
@@ -1660,24 +2094,22 @@ def get_applications():
         applications = cursor.fetchall()
 
         return jsonify({
-
             "applications":
-                applications
-
+            applications
         }), 200
 
     except Exception as e:
 
-        print("GET APPLICATIONS ERROR:", e)
+        print(
+            "GET APPLICATIONS ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get applications",
-
+            "Unable to get applications",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1687,6 +2119,11 @@ def get_applications():
 
         if db:
             db.close()
+
+
+# =========================================================
+# GET USER APPLICATIONS
+# =========================================================
 
 @app.route(
     "/api/user/applications/<int:user_id>",
@@ -1704,16 +2141,20 @@ def get_user_applications(user_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
             SELECT
+                applications.id
+                    AS application_id,
 
-                applications.id AS application_id,
                 applications.job_id,
                 applications.user_id,
                 applications.status,
@@ -1726,16 +2167,19 @@ def get_user_applications(user_id):
                 jobs.type,
                 jobs.skills,
 
-                users.name AS company_name,
-                users.email AS company_email
+                users.name
+                    AS company_name,
+
+                users.email
+                    AS company_email
 
             FROM applications
 
             INNER JOIN jobs
-            ON applications.job_id = jobs.id
+                ON applications.job_id = jobs.id
 
             LEFT JOIN users
-            ON jobs.company = users.id
+                ON jobs.company = users.id
 
             WHERE applications.user_id = %s
 
@@ -1747,24 +2191,22 @@ def get_user_applications(user_id):
         applications = cursor.fetchall()
 
         return jsonify({
-
             "applications":
-                applications
-
+            applications
         }), 200
 
     except Exception as e:
 
-        print("USER APPLICATIONS ERROR:", e)
+        print(
+            "USER APPLICATIONS ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get user applications",
-
+            "Unable to get user applications",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1775,11 +2217,18 @@ def get_user_applications(user_id):
         if db:
             db.close()
 
+
+# =========================================================
+# GET COMPANY APPLICATIONS
+# =========================================================
+
 @app.route(
     "/api/company/applications/<int:company_id>",
     methods=["GET"]
 )
-def get_company_applications(company_id):
+def get_company_applications(
+    company_id
+):
 
     db = None
     cursor = None
@@ -1791,10 +2240,13 @@ def get_company_applications(company_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -1811,24 +2263,34 @@ def get_company_applications(company_id):
                 jobs.salary,
                 jobs.type,
 
-                applicant.name AS applicant_name,
-                applicant.email AS applicant_email,
-                applicant.resume AS applicant_resume,
+                applicant.name
+                    AS applicant_name,
 
-                company.id AS company_id,
-                company.name AS company_name,
-                company.email AS company_email
+                applicant.email
+                    AS applicant_email,
+
+                applicant.resume
+                    AS applicant_resume,
+
+                company.id
+                    AS company_id,
+
+                company.name
+                    AS company_name,
+
+                company.email
+                    AS company_email
 
             FROM applications
 
             INNER JOIN jobs
-            ON applications.job_id = jobs.id
+                ON applications.job_id = jobs.id
 
             INNER JOIN job_seekers AS applicant
-            ON applications.user_id = applicant.id
+                ON applications.user_id = applicant.id
 
             INNER JOIN users AS company
-            ON jobs.company = company.id
+                ON jobs.company = company.id
 
             WHERE jobs.company = %s
 
@@ -1841,18 +2303,28 @@ def get_company_applications(company_id):
 
         for application in applications:
 
-            if application.get("applicant_resume"):
+            if application.get(
+                "applicant_resume"
+            ):
 
-                application["resume_available"] = True
+                application[
+                    "resume_available"
+                ] = True
 
-                application["resume_view_url"] = (
-                    f"/api/company/applicant-resume/"
+                application[
+                    "resume_view_url"
+                ] = (
+                    f"/api/company/"
+                    f"applicant-resume/"
                     f"{company_id}/"
                     f"{application['user_id']}"
                 )
 
-                application["resume_download_url"] = (
-                    f"/api/company/applicant-resume/"
+                application[
+                    "resume_download_url"
+                ] = (
+                    f"/api/company/"
+                    f"applicant-resume/"
                     f"{company_id}/"
                     f"{application['user_id']}"
                     f"?download=true"
@@ -1860,31 +2332,35 @@ def get_company_applications(company_id):
 
             else:
 
-                application["resume_available"] = False
+                application[
+                    "resume_available"
+                ] = False
 
-                application["resume_view_url"] = None
+                application[
+                    "resume_view_url"
+                ] = None
 
-                application["resume_download_url"] = None
+                application[
+                    "resume_download_url"
+                ] = None
 
         return jsonify({
-
             "applications":
-                applications
-
+            applications
         }), 200
 
     except Exception as e:
 
-        print("COMPANY APPLICATIONS ERROR:", e)
+        print(
+            "COMPANY APPLICATIONS ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Unable to get company applications",
-
+            "Unable to get company applications",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1895,31 +2371,44 @@ def get_company_applications(company_id):
         if db:
             db.close()
 
+
+# =========================================================
+# UPDATE APPLICATION STATUS
+# =========================================================
+
 @app.route(
     "/api/applications/<int:application_id>",
     methods=["PUT"]
 )
-def update_application_status(application_id):
+def update_application_status(
+    application_id
+):
 
     db = None
     cursor = None
 
     try:
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
-        status = data.get("status")
+        status = data.get(
+            "status"
+        )
 
         if not status:
 
             return jsonify({
-                "message": "Status is required"
+                "message":
+                "Status is required"
             }), 400
 
         db = get_db_connection()
@@ -1927,7 +2416,8 @@ def update_application_status(application_id):
         if not db:
 
             return jsonify({
-                "message": "Database connection failed"
+                "message":
+                "Database connection failed"
             }), 500
 
         cursor = db.cursor()
@@ -1935,9 +2425,7 @@ def update_application_status(application_id):
         cursor.execute(
             """
             UPDATE applications
-
             SET status = %s
-
             WHERE id = %s
             """,
             (
@@ -1951,16 +2439,15 @@ def update_application_status(application_id):
             db.rollback()
 
             return jsonify({
-                "message": "Application not found"
+                "message":
+                "Application not found"
             }), 404
 
         db.commit()
 
         return jsonify({
-
             "message":
-                "Application status updated successfully"
-
+            "Application status updated successfully"
         }), 200
 
     except Exception as e:
@@ -1968,16 +2455,16 @@ def update_application_status(application_id):
         if db:
             db.rollback()
 
-        print("UPDATE APPLICATION ERROR:", e)
+        print(
+            "UPDATE APPLICATION ERROR:",
+            e
+        )
 
         return jsonify({
-
             "message":
-                "Failed to update application",
-
+            "Failed to update application",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -1987,6 +2474,11 @@ def update_application_status(application_id):
 
         if db:
             db.close()
+
+
+# =========================================================
+# UPLOAD RESUME
+# =========================================================
 
 @app.route(
     "/api/user/upload-resume",
@@ -1999,33 +2491,50 @@ def upload_resume():
 
     try:
 
-        print("\n===================================")
-        print("RESUME UPLOAD API HIT")
-        print("===================================")
+        print(
+            "\n==================================="
+        )
 
-        user_id = request.form.get("user_id")
+        print(
+            "RESUME UPLOAD API HIT"
+        )
 
-        resume = request.files.get("resume")
+        print(
+            "==================================="
+        )
 
-        print("USER ID:", user_id)
+        user_id = request.form.get(
+            "user_id"
+        )
+
+        resume = request.files.get(
+            "resume"
+        )
+
+        print(
+            "USER ID:",
+            user_id
+        )
 
         print(
             "RESUME:",
-            resume.filename if resume else None
+            resume.filename
+            if resume
+            else None
         )
 
         if not user_id:
 
             return jsonify({
                 "message":
-                    "User ID is required"
+                "User ID is required"
             }), 400
 
         if not resume:
 
             return jsonify({
                 "message":
-                    "Resume file is required"
+                "Resume file is required"
             }), 400
 
         if not allowed_resume_file(
@@ -2033,10 +2542,8 @@ def upload_resume():
         ):
 
             return jsonify({
-
                 "message":
-                    "Only PDF, DOC and DOCX files are allowed"
-
+                "Only PDF, DOC and DOCX files are allowed"
             }), 400
 
         filename = secure_filename(
@@ -2046,10 +2553,8 @@ def upload_resume():
         if not filename:
 
             return jsonify({
-
                 "message":
-                    "Invalid resume filename"
-
+                "Invalid resume filename"
             }), 400
 
         db = get_db_connection()
@@ -2057,13 +2562,13 @@ def upload_resume():
         if not db:
 
             return jsonify({
-
                 "message":
-                    "Database connection failed"
-
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -2081,31 +2586,32 @@ def upload_resume():
         if not user:
 
             return jsonify({
-
                 "message":
-                    "User not found"
-
+                "User not found"
             }), 404
 
-        old_resume = user.get("resume")
+        old_resume = user.get(
+            "resume"
+        )
 
         if old_resume:
 
-            old_file_path = get_resume_file_path(
-                old_resume
+            old_file_path = (
+                get_resume_file_path(
+                    old_resume
+                )
             )
 
             if (
                 old_file_path
-                and os.path.exists(old_file_path)
+                and os.path.exists(
+                    old_file_path
+                )
             ):
 
                 try:
 
-                    os.remove(old_file_path)
-
-                    print(
-                        "OLD RESUME DELETED:",
+                    os.remove(
                         old_file_path
                     )
 
@@ -2125,7 +2631,9 @@ def upload_resume():
             new_filename
         )
 
-        resume.save(file_path)
+        resume.save(
+            file_path
+        )
 
         database_path = os.path.join(
             "uploads",
@@ -2139,9 +2647,7 @@ def upload_resume():
         cursor.execute(
             """
             UPDATE job_seekers
-
             SET resume = %s
-
             WHERE id = %s
             """,
             (
@@ -2152,30 +2658,15 @@ def upload_resume():
 
         db.commit()
 
-        print(
-            "NEW RESUME SAVED:",
-            file_path
-        )
-
-        print(
-            "DATABASE PATH:",
-            database_path
-        )
-
         return jsonify({
-
             "message":
-                "Resume uploaded successfully",
-
+            "Resume uploaded successfully",
             "resume":
-                database_path,
-
+            database_path,
             "resume_url":
-                f"/api/user/resume/{user_id}",
-
+            f"/api/user/resume/{user_id}",
             "file_name":
-                filename
-
+            filename
         }), 200
 
     except Exception as e:
@@ -2189,13 +2680,10 @@ def upload_resume():
         )
 
         return jsonify({
-
             "message":
-                "Resume upload failed",
-
+            "Resume upload failed",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -2205,6 +2693,11 @@ def upload_resume():
 
         if db:
             db.close()
+
+
+# =========================================================
+# VIEW USER RESUME
+# =========================================================
 
 @app.route(
     "/api/user/resume/<int:user_id>",
@@ -2223,10 +2716,12 @@ def view_user_resume(user_id):
 
             return jsonify({
                 "message":
-                    "Database connection failed"
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -2246,32 +2741,36 @@ def view_user_resume(user_id):
 
             return jsonify({
                 "message":
-                    "User not found"
+                "User not found"
             }), 404
 
         if not user.get("resume"):
 
             return jsonify({
                 "message":
-                    "Resume not uploaded"
+                "Resume not uploaded"
             }), 404
 
-        file_path = get_resume_file_path(
-            user["resume"]
+        file_path = (
+            get_resume_file_path(
+                user["resume"]
+            )
         )
 
         if not file_path:
 
             return jsonify({
                 "message":
-                    "Resume path not found"
+                "Resume path not found"
             }), 404
 
-        if not os.path.exists(file_path):
+        if not os.path.exists(
+            file_path
+        ):
 
             return jsonify({
                 "message":
-                    "Resume file not found on server"
+                "Resume file not found on server"
             }), 404
 
         return send_file(
@@ -2287,13 +2786,10 @@ def view_user_resume(user_id):
         )
 
         return jsonify({
-
             "message":
-                "Unable to open resume",
-
+            "Unable to open resume",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -2304,8 +2800,14 @@ def view_user_resume(user_id):
         if db:
             db.close()
 
+
+# =========================================================
+# COMPANY VIEW / DOWNLOAD APPLICANT RESUME
+# =========================================================
+
 @app.route(
-    "/api/company/applicant-resume/<int:company_id>/<int:user_id>",
+    "/api/company/applicant-resume/"
+    "<int:company_id>/<int:user_id>",
     methods=["GET"]
 )
 def company_applicant_resume(
@@ -2324,10 +2826,12 @@ def company_applicant_resume(
 
             return jsonify({
                 "message":
-                    "Database connection failed"
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -2348,7 +2852,7 @@ def company_applicant_resume(
 
             return jsonify({
                 "message":
-                    "Company not found"
+                "Company not found"
             }), 404
 
         cursor.execute(
@@ -2360,19 +2864,26 @@ def company_applicant_resume(
                 job_seekers.email,
                 job_seekers.resume,
 
-                applications.id AS application_id,
+                applications.id
+                    AS application_id,
 
-                jobs.id AS job_id,
-                jobs.title AS job_title,
+                jobs.id
+                    AS job_id,
+
+                jobs.title
+                    AS job_title,
+
                 jobs.company
 
             FROM job_seekers
 
             INNER JOIN applications
-            ON applications.user_id = job_seekers.id
+                ON applications.user_id =
+                   job_seekers.id
 
             INNER JOIN jobs
-            ON applications.job_id = jobs.id
+                ON applications.job_id =
+                   jobs.id
 
             WHERE job_seekers.id = %s
             AND jobs.company = %s
@@ -2390,71 +2901,64 @@ def company_applicant_resume(
         if not applicant:
 
             return jsonify({
-
                 "message":
-                    "This applicant has not applied to your company"
-
+                "This applicant has not applied to your company"
             }), 403
 
-        if not applicant.get("resume"):
+        if not applicant.get(
+            "resume"
+        ):
 
             return jsonify({
-
                 "message":
-                    "Applicant has not uploaded a resume"
-
+                "Applicant has not uploaded a resume"
             }), 404
 
-        file_path = get_resume_file_path(
-            applicant["resume"]
+        file_path = (
+            get_resume_file_path(
+                applicant["resume"]
+            )
         )
 
         if not file_path:
 
             return jsonify({
-
                 "message":
-                    "Resume path not found"
-
+                "Resume path not found"
             }), 404
 
-        if not os.path.exists(file_path):
+        if not os.path.exists(
+            file_path
+        ):
 
             return jsonify({
-
                 "message":
-                    "Resume file not found on server",
-
+                "Resume file not found on server",
                 "path":
-                    file_path
-
+                file_path
             }), 404
 
-        download = request.args.get(
-            "download",
-            "false"
-        ).lower() == "true"
+        download = (
+            request.args.get(
+                "download",
+                "false"
+            ).lower()
+            == "true"
+        )
 
         if download:
 
             return send_file(
-
                 file_path,
-
                 as_attachment=True,
-
                 download_name=os.path.basename(
                     file_path
                 )
-
             )
 
         return send_file(
-
             file_path,
-
             as_attachment=False
-
         )
 
     except Exception as e:
@@ -2465,13 +2969,10 @@ def company_applicant_resume(
         )
 
         return jsonify({
-
             "message":
-                "Unable to open applicant resume",
-
+            "Unable to open applicant resume",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -2481,6 +2982,11 @@ def company_applicant_resume(
 
         if db:
             db.close()
+
+
+# =========================================================
+# USER PROFILE
+# =========================================================
 
 @app.route(
     "/api/user/profile/<int:user_id>",
@@ -2499,10 +3005,12 @@ def get_user_profile(user_id):
 
             return jsonify({
                 "message":
-                    "Database connection failed"
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -2523,7 +3031,7 @@ def get_user_profile(user_id):
 
             return jsonify({
                 "message":
-                    "User not found"
+                "User not found"
             }), 404
 
         if user.get("resume"):
@@ -2539,7 +3047,8 @@ def get_user_profile(user_id):
         user["role"] = "user"
 
         return jsonify({
-            "user": user
+            "user":
+            user
         }), 200
 
     except Exception as e:
@@ -2550,13 +3059,10 @@ def get_user_profile(user_id):
         )
 
         return jsonify({
-
             "message":
-                "Unable to get user profile",
-
+            "Unable to get user profile",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -2567,11 +3073,18 @@ def get_user_profile(user_id):
         if db:
             db.close()
 
+
+# =========================================================
+# COMPANY PROFILE
+# =========================================================
+
 @app.route(
     "/api/company/profile/<int:company_id>",
     methods=["GET"]
 )
-def get_company_profile(company_id):
+def get_company_profile(
+    company_id
+):
 
     db = None
     cursor = None
@@ -2584,10 +3097,12 @@ def get_company_profile(company_id):
 
             return jsonify({
                 "message":
-                    "Database connection failed"
+                "Database connection failed"
             }), 500
 
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(
+            dictionary=True
+        )
 
         cursor.execute(
             """
@@ -2609,11 +3124,12 @@ def get_company_profile(company_id):
 
             return jsonify({
                 "message":
-                    "Company not found"
+                "Company not found"
             }), 404
 
         return jsonify({
-            "company": company
+            "company":
+            company
         }), 200
 
     except Exception as e:
@@ -2624,13 +3140,10 @@ def get_company_profile(company_id):
         )
 
         return jsonify({
-
             "message":
-                "Unable to get company profile",
-
+            "Unable to get company profile",
             "error":
-                str(e)
-
+            str(e)
         }), 500
 
     finally:
@@ -2641,29 +3154,138 @@ def get_company_profile(company_id):
         if db:
             db.close()
 
-print("\n==============================================")
-print("             CAREERGO API ROUTES")
-print("==============================================")
+
+# =========================================================
+# ERROR HANDLERS
+# =========================================================
+
+@app.errorhandler(413)
+def request_entity_too_large(
+    error
+):
+
+    return jsonify({
+        "message":
+        "File is too large. Maximum size is 10 MB."
+    }), 413
+
+
+@app.errorhandler(404)
+def page_not_found(
+    error
+):
+
+    return jsonify({
+        "message":
+        "API endpoint not found"
+    }), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(
+    error
+):
+
+    return jsonify({
+        "message":
+        "Internal server error"
+    }), 500
+
+
+# =========================================================
+# API ROUTE LIST
+# =========================================================
+
+print(
+    "\n=============================================="
+)
+
+print(
+    "             CAREERGO API ROUTES"
+)
+
+print(
+    "=============================================="
+)
 
 for rule in app.url_map.iter_rules():
 
     print(
-        f"{rule.methods} -> {rule}"
+        f"{sorted(rule.methods)} -> {rule}"
     )
 
-print("==============================================\n")
+print(
+    "==============================================\n"
+)
+
+
+# =========================================================
+# START APPLICATION
+# =========================================================
 
 if __name__ == "__main__":
 
+    print(
+        "\n=============================================="
+    )
+
+    print(
+        "             CAREERGO BACKEND"
+    )
+
+    print(
+        "=============================================="
+    )
+
+    print(
+        "HOST:",
+        DB_HOST
+    )
+
+    print(
+        "PORT:",
+        DB_PORT
+    )
+
+    print(
+        "DATABASE:",
+        DB_NAME
+    )
+
+    print(
+        "USER:",
+        DB_USER
+    )
+
+    print(
+        "=============================================="
+    )
+
     test_database_connection()
 
-    print("\n==============================================")
-    print("CareerGo Backend Started")
-    print("http://127.0.0.1:5000")
-    print("==============================================\n")
+    print(
+        "\nCareerGo Backend Started"
+    )
+
+    print(
+        "==============================================\n"
+    )
+
+    port = int(
+        os.getenv(
+            "PORT",
+            "5000"
+        )
+    )
 
     app.run(
         host="0.0.0.0",
-        port=5000,
-        debug=True
+        port=port,
+        debug=(
+            os.getenv(
+                "FLASK_DEBUG",
+                "false"
+            ).lower()
+            == "true"
+        )
     )
