@@ -38,7 +38,7 @@ function AdminDashboard() {
       setLoading(true);
 
       const response = await fetch(
-        "http://127.0.0.1:5000/api/admin/dashboard"
+        `https://servercarrergo.onrender.com/api/admin/dashboard`
       );
 
       if (!response.ok) {
