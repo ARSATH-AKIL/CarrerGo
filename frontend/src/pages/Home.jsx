@@ -13,13 +13,11 @@ function Home() {
     const searchValue = search.trim();
     const locationValue = location.trim();
 
-    // No search entered
     if (!searchValue && !locationValue) {
       navigate("/jobs");
       return;
     }
 
-    // Create query parameters
     const params = new URLSearchParams();
 
     if (searchValue) {
@@ -30,53 +28,41 @@ function Home() {
       params.set("location", locationValue);
     }
 
-    // Go to Jobs page
     navigate(`/jobs?${params.toString()}`);
   };
 
   return (
     <section className="hero">
+      <div className="hero-content">
+        <h2>
+          Find Your <span>Dream Job</span>
+        </h2>
 
-      <h1>
-        Find Your <span>Dream Job</span>
-      </h1>
+        <p>
+          Discover the right opportunities and take the next step
+          in your career with CareerGo.
+        </p>
 
-      <p>
-        Discover the right opportunities and take
-        the next step in your career with CareerGo.
-      </p>
+        <form className="search-box" onSubmit={handleSearch}>
+          <input
+            type="text"
+            placeholder="Job title, skills or keywords"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-      <form
-        className="search-box"
-        onSubmit={handleSearch}
-      >
+          <input
+            type="text"
+            placeholder="Location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
 
-        {/* Job Search */}
-
-        <input
-          type="text"
-          placeholder="Job title, skills or keywords"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* Location */}
-
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-
-        {/* Search Button */}
-
-        <button type="submit">
-          Search Jobs
-        </button>
-
-      </form>
-
+          <button type="submit">
+            Search Jobs
+          </button>
+        </form>
+      </div>
     </section>
   );
 }

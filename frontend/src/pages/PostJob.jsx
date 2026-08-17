@@ -16,7 +16,6 @@ function PostJob() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Get logged-in company
   const storedCompany = localStorage.getItem("company");
 
   let company = null;
@@ -28,7 +27,6 @@ function PostJob() {
     company = null;
   }
 
-  // Handle input changes
   const handleChange = (e) => {
     setJobData({
       ...jobData,
@@ -36,20 +34,16 @@ function PostJob() {
     });
   };
 
-  // Submit job
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setMessage("");
 
-    // Check company login
     if (!company) {
       setMessage("Please login as a company first");
       navigate("/company-login");
       return;
     }
 
-    // Check company ID
     if (!company.id) {
       setMessage("Company ID not found. Please login again.");
       localStorage.removeItem("company");
@@ -64,11 +58,9 @@ function PostJob() {
         "https://servercarrergo.onrender.com/api/jobs",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             company_id: company.id,
             title: jobData.title,
@@ -90,7 +82,6 @@ function PostJob() {
           data.message || "Job posted successfully!"
         );
 
-        // Clear form
         setJobData({
           title: "",
           location: "",
@@ -100,36 +91,29 @@ function PostJob() {
           skills: ""
         });
 
-        // Redirect after success
         setTimeout(() => {
           navigate("/company-dashboard");
         }, 1000);
-
       } else {
         setMessage(
           data.message || "Failed to post job"
         );
       }
-
     } catch (error) {
       console.error("Post Job Error:", error);
 
       setMessage(
         "Unable to connect to CareerGo backend"
       );
-
     } finally {
       setLoading(false);
     }
   };
 
-  // If company is not logged in
   if (!company) {
     return (
       <div className="post-job-page">
-
         <div className="post-job-card">
-
           <h2>Company Login Required</h2>
 
           <p>
@@ -143,36 +127,24 @@ function PostJob() {
           >
             Company Login
           </Link>
-
         </div>
-
       </div>
     );
   }
 
   return (
     <div className="post-job-page">
-
       <div className="post-job-card">
-
-        {/* Header */}
-
         <div className="post-job-header">
-
           <h1>Post a New Job</h1>
 
           <p>
             Create a new job opportunity and find
             the right candidate.
           </p>
-
         </div>
 
-
-        {/* Company Information */}
-
         <div className="form-group">
-
           <label>Company Name</label>
 
           <input
@@ -180,12 +152,9 @@ function PostJob() {
             value={company.name || ""}
             readOnly
           />
-
         </div>
 
-
         <div className="form-group">
-
           <label>Company Email</label>
 
           <input
@@ -193,18 +162,10 @@ function PostJob() {
             value={company.email || ""}
             readOnly
           />
-
         </div>
 
-
-        {/* Job Form */}
-
         <form onSubmit={handleSubmit}>
-
-          {/* Job Title */}
-
           <div className="form-group">
-
             <label>Job Title</label>
 
             <input
@@ -215,16 +176,10 @@ function PostJob() {
               onChange={handleChange}
               required
             />
-
           </div>
 
-
-          {/* Location and Salary */}
-
           <div className="form-row">
-
             <div className="form-group">
-
               <label>Location</label>
 
               <input
@@ -235,12 +190,9 @@ function PostJob() {
                 onChange={handleChange}
                 required
               />
-
             </div>
 
-
             <div className="form-group">
-
               <label>Salary</label>
 
               <input
@@ -251,16 +203,10 @@ function PostJob() {
                 onChange={handleChange}
                 required
               />
-
             </div>
-
           </div>
 
-
-          {/* Job Type */}
-
           <div className="form-group">
-
             <label>Job Type</label>
 
             <select
@@ -269,7 +215,6 @@ function PostJob() {
               onChange={handleChange}
               required
             >
-
               <option value="">
                 Select Job Type
               </option>
@@ -289,16 +234,10 @@ function PostJob() {
               <option value="Internship">
                 Internship
               </option>
-
             </select>
-
           </div>
 
-
-          {/* Job Description */}
-
           <div className="form-group">
-
             <label>Job Description</label>
 
             <textarea
@@ -309,14 +248,9 @@ function PostJob() {
               rows="6"
               required
             />
-
           </div>
 
-
-          {/* Skills */}
-
           <div className="form-group">
-
             <label>Required Skills</label>
 
             <input
@@ -327,11 +261,7 @@ function PostJob() {
               onChange={handleChange}
               required
             />
-
           </div>
-
-
-          {/* Message */}
 
           {message && (
             <p className="post-job-message">
@@ -339,11 +269,7 @@ function PostJob() {
             </p>
           )}
 
-
-          {/* Buttons */}
-
           <div className="post-job-buttons">
-
             <Link
               to="/company-dashboard"
               className="cancel-job-btn"
@@ -351,25 +277,16 @@ function PostJob() {
               Cancel
             </Link>
 
-
             <button
               type="submit"
               className="submit-job-btn"
               disabled={loading}
             >
-
-              {loading
-                ? "Posting..."
-                : "Post Job"}
-
+              {loading ? "Posting..." : "Post Job"}
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 }

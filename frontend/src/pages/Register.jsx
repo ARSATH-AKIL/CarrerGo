@@ -17,7 +17,6 @@ function Register() {
 
     setMessage("");
 
-    // Check password
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
       return;
@@ -34,16 +33,14 @@ function Register() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: name,
-            email: email,
-            password: password,
+            name: name.trim(),
+            email: email.trim(),
+            password,
           }),
         }
       );
 
       const data = await response.json();
-
-      console.log("REGISTER RESPONSE:", data);
 
       if (response.ok) {
         setMessage("Registration successful!");
@@ -57,16 +54,11 @@ function Register() {
           navigate("/login");
         }, 1000);
       } else {
-        setMessage(
-          data.message || "Registration failed"
-        );
+        setMessage(data.message || "Registration failed");
       }
     } catch (error) {
       console.error("REGISTER ERROR:", error);
-
-      setMessage(
-        "Unable to connect to CareerGo backend"
-      );
+      setMessage("Unable to connect to CareerGo backend");
     } finally {
       setLoading(false);
     }
@@ -74,9 +66,7 @@ function Register() {
 
   return (
     <div className="auth-page">
-
       <div className="auth-card">
-
         <h2>Create Account</h2>
 
         <p>
@@ -84,14 +74,11 @@ function Register() {
         </p>
 
         <form onSubmit={handleSubmit}>
-
           <input
             type="text"
             placeholder="Full Name"
             value={name}
-            onChange={(e) =>
-              setName(e.target.value)
-            }
+            onChange={(e) => setName(e.target.value)}
             required
           />
 
@@ -99,9 +86,7 @@ function Register() {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
 
@@ -109,9 +94,7 @@ function Register() {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
 
@@ -131,27 +114,16 @@ function Register() {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-          >
-            {loading
-              ? "Registering..."
-              : "Register"}
+          <button type="submit" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
           </button>
-
         </form>
 
         <p className="auth-footer">
-          Already have an account?
-
-          <Link to="/login">
-            {" "}Login
-          </Link>
+          Already have an account?{" "}
+          <Link to="/login">Login</Link>
         </p>
-
       </div>
-
     </div>
   );
 }

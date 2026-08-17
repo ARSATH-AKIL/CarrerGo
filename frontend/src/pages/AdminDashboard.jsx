@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 
 function AdminDashboard() {
-
-  // =====================================================
-  // ADMIN DASHBOARD STATS
-  // =====================================================
-
+  // Admin dashboard stats
   const [stats, setStats] = useState({
     users: 0,
     companies: 0,
@@ -17,108 +13,51 @@ function AdminDashboard() {
     rejected_applications: 0
   });
 
-  // =====================================================
-  // JOBS
-  // =====================================================
-
+  // Jobs
   const [jobs, setJobs] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [jobsLoading, setJobsLoading] = useState(true);
 
-
-  // =====================================================
-  // GET ADMIN DASHBOARD DATA
-  // =====================================================
-
+  // Get admin dashboard data
   const loadDashboard = async () => {
-
     try {
-
       setLoading(true);
 
       const response = await fetch(
-        `https://servercarrergo.onrender.com/api/admin/dashboard`
+        "https://servercarrergo.onrender.com/api/admin/dashboard"
       );
 
       if (!response.ok) {
-
-        throw new Error(
-          "Unable to get dashboard data"
-        );
-
+        throw new Error("Unable to get dashboard data");
       }
 
       const data = await response.json();
 
-      console.log(
-        "ADMIN DASHBOARD DATA:",
-        data
-      );
-
-
-      // =================================================
-      // SET ALL STATS
-      // =================================================
+      console.log("ADMIN DASHBOARD DATA:", data);
 
       setStats({
-
-        users:
-          Number(data.stats?.users) || 0,
-
-        companies:
-          Number(data.stats?.companies) || 0,
-
-        jobs:
-          Number(data.stats?.jobs) || 0,
-
-        applications:
-          Number(data.stats?.applications) || 0,
-
-        active_jobs:
-          Number(data.stats?.active_jobs) || 0,
-
+        users: Number(data.stats?.users) || 0,
+        companies: Number(data.stats?.companies) || 0,
+        jobs: Number(data.stats?.jobs) || 0,
+        applications: Number(data.stats?.applications) || 0,
+        active_jobs: Number(data.stats?.active_jobs) || 0,
         pending_applications:
-          Number(
-            data.stats?.pending_applications
-          ) || 0,
-
+          Number(data.stats?.pending_applications) || 0,
         accepted_applications:
-          Number(
-            data.stats?.accepted_applications
-          ) || 0,
-
+          Number(data.stats?.accepted_applications) || 0,
         rejected_applications:
-          Number(
-            data.stats?.rejected_applications
-          ) || 0
-
+          Number(data.stats?.rejected_applications) || 0
       });
-
     } catch (error) {
-
-      console.error(
-        "ADMIN DASHBOARD ERROR:",
-        error
-      );
-
+      console.error("ADMIN DASHBOARD ERROR:", error);
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
-
-  // =====================================================
-  // GET ALL JOBS
-  // =====================================================
-
+  // Get all jobs
   const loadJobs = async () => {
-
     try {
-
       setJobsLoading(true);
 
       const response = await fetch(
@@ -126,63 +65,30 @@ function AdminDashboard() {
       );
 
       if (!response.ok) {
-
-        throw new Error(
-          "Unable to get jobs"
-        );
-
+        throw new Error("Unable to get jobs");
       }
 
       const data = await response.json();
 
-      console.log(
-        "ADMIN JOBS:",
-        data
-      );
+      console.log("ADMIN JOBS:", data);
 
-      setJobs(
-        Array.isArray(data.jobs)
-          ? data.jobs
-          : []
-      );
-
+      setJobs(Array.isArray(data.jobs) ? data.jobs : []);
     } catch (error) {
-
-      console.error(
-        "ADMIN JOBS ERROR:",
-        error
-      );
-
+      console.error("ADMIN JOBS ERROR:", error);
       setJobs([]);
-
     } finally {
-
       setJobsLoading(false);
-
     }
-
   };
 
-
-  // =====================================================
-  // LOAD DASHBOARD + JOBS
-  // =====================================================
-
+  // Load dashboard and jobs
   useEffect(() => {
-
     loadDashboard();
-
     loadJobs();
-
   }, []);
 
-
-  // =====================================================
-  // DELETE JOB
-  // =====================================================
-
+  // Delete job
   const handleDeleteJob = async (jobId) => {
-
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this job?"
     );
@@ -191,9 +97,7 @@ function AdminDashboard() {
       return;
     }
 
-
     try {
-
       const response = await fetch(
         `https://servercarrergo.onrender.com/api/jobs/${jobId}`,
         {
@@ -201,474 +105,183 @@ function AdminDashboard() {
         }
       );
 
-
       const data = await response.json();
 
-
       if (!response.ok) {
-
-        alert(
-          data.message ||
-          "Unable to delete job"
-        );
-
+        alert(data.message || "Unable to delete job");
         return;
-
       }
 
-
-      // =================================================
-      // REMOVE JOB FROM UI
-      // =================================================
-
-      setJobs((previousJobs) => {
-
-        return previousJobs.filter(
-          (job) => job.id !== jobId
-        );
-
-      });
-
-
-      // =================================================
-      // UPDATE JOB COUNTS
-      // =================================================
+      setJobs((previousJobs) =>
+        previousJobs.filter((job) => job.id !== jobId)
+      );
 
       setStats((previousStats) => ({
-
         ...previousStats,
-
-        jobs: Math.max(
-          Number(previousStats.jobs) - 1,
-          0
-        ),
-
+        jobs: Math.max(Number(previousStats.jobs) - 1, 0),
         active_jobs: Math.max(
           Number(previousStats.active_jobs) - 1,
           0
         )
-
       }));
 
-
-      alert(
-        "Job deleted successfully"
-      );
-
-
-      // =================================================
-      // GET LATEST DATABASE COUNTS
-      // =================================================
+      alert("Job deleted successfully");
 
       loadDashboard();
-
-
     } catch (error) {
+      console.error("DELETE JOB ERROR:", error);
 
-      console.error(
-        "DELETE JOB ERROR:",
-        error
-      );
-
-      alert(
-        "Unable to connect to CareerGo backend"
-      );
-
+      alert("Unable to connect to CareerGo backend");
     }
-
   };
 
-
-  // =====================================================
-  // LOADING SCREEN
-  // =====================================================
-
+  // Loading screen
   if (loading) {
-
     return (
-
       <div className="admin-dashboard">
-
         <div className="admin-header">
-
-          <h1>
-            Admin Dashboard
-          </h1>
-
-          <p>
-            Loading dashboard...
-          </p>
-
+          <h1>Admin Dashboard</h1>
+          <p>Loading dashboard...</p>
         </div>
-
       </div>
-
     );
-
   }
 
-
-  // =====================================================
-  // ADMIN DASHBOARD
-  // =====================================================
-
+  // Admin dashboard
   return (
-
     <div className="admin-dashboard">
-
-
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
+      {/* Header */}
       <div className="admin-header">
-
-        <h1>
-          Admin Dashboard
-        </h1>
-
-        <p>
-          Welcome to CareerGo Admin Panel
-        </p>
-
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to CareerGo Admin Panel</p>
       </div>
 
-
-      {/* =================================================
-          STAT CARDS
-      ================================================= */}
-
+      {/* Stat Cards */}
       <div className="admin-stats">
-
-
-        {/* ===============================================
-            TOTAL USERS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Total Users
-          </h3>
-
-          <h2>
-            {stats.users}
-          </h2>
-
+          <h3>Total Users</h3>
+          <h2>{stats.users}</h2>
         </div>
 
-
-        {/* ===============================================
-            TOTAL COMPANIES
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Total Companies
-          </h3>
-
-          <h2>
-            {stats.companies}
-          </h2>
-
+          <h3>Total Companies</h3>
+          <h2>{stats.companies}</h2>
         </div>
 
-
-        {/* ===============================================
-            TOTAL JOBS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Total Jobs
-          </h3>
-
-          <h2>
-            {stats.jobs}
-          </h2>
-
+          <h3>Total Jobs</h3>
+          <h2>{stats.jobs}</h2>
         </div>
 
-
-        {/* ===============================================
-            TOTAL APPLICATIONS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Total Applications
-          </h3>
-
-          <h2>
-            {stats.applications}
-          </h2>
-
+          <h3>Total Applications</h3>
+          <h2>{stats.applications}</h2>
         </div>
 
-
-        {/* ===============================================
-            ACTIVE JOBS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Active Jobs
-          </h3>
-
-          <h2>
-            {stats.active_jobs}
-          </h2>
-
+          <h3>Active Jobs</h3>
+          <h2>{stats.active_jobs}</h2>
         </div>
 
-
-        {/* ===============================================
-            PENDING APPLICATIONS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Pending Applications
-          </h3>
-
-          <h2>
-            {stats.pending_applications}
-          </h2>
-
+          <h3>Pending Applications</h3>
+          <h2>{stats.pending_applications}</h2>
         </div>
 
-
-        {/* ===============================================
-            ACCEPTED APPLICATIONS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Accepted Applications
-          </h3>
-
-          <h2>
-            {stats.accepted_applications}
-          </h2>
-
+          <h3>Accepted Applications</h3>
+          <h2>{stats.accepted_applications}</h2>
         </div>
 
-
-        {/* ===============================================
-            REJECTED APPLICATIONS
-        =============================================== */}
-
         <div className="admin-stat-card">
-
-          <h3>
-            Rejected Applications
-          </h3>
-
-          <h2>
-            {stats.rejected_applications}
-          </h2>
-
+          <h3>Rejected Applications</h3>
+          <h2>{stats.rejected_applications}</h2>
         </div>
-
-
       </div>
 
-
-      {/* =================================================
-          JOB MANAGEMENT
-      ================================================= */}
-
+      {/* Job Management */}
       <div className="admin-job-management">
-
-
-        {/* ===============================================
-            JOB HEADER
-        =============================================== */}
-
         <div className="admin-job-header">
-
-          <h2>
-            Job Management
-          </h2>
+          <h2>Job Management</h2>
 
           <button
             className="admin-post-job-btn"
             onClick={() => {
-
-              alert(
-                "Post Job section will be added next."
-              );
-
+              alert("Post Job section will be added next.");
             }}
           >
-
             + Post New Job
-
           </button>
-
         </div>
 
-
-        {/* ===============================================
-            JOB LOADING
-        =============================================== */}
-
+        {/* Job Loading */}
         {jobsLoading ? (
-
           <div className="admin-no-jobs">
-
             Loading jobs...
-
           </div>
-
         ) : jobs.length === 0 ? (
-
           <div className="admin-no-jobs">
-
             No jobs available.
-
           </div>
-
         ) : (
-
-
-          /* =============================================
-             JOB LIST
-          ============================================= */
-
           <div className="admin-job-list">
-
             {jobs.map((job) => (
-
               <div
                 className="admin-job-card"
                 key={job.id}
               >
-
-
-                {/* =====================================
-                    JOB INFORMATION
-                ===================================== */}
-
+                {/* Job Information */}
                 <div className="admin-job-info">
-
-                  <h3>
-                    {job.title}
-                  </h3>
-
+                  <h3>{job.title}</h3>
 
                   <p className="admin-job-company">
-
-                    {job.company_name ||
-                      "Company"}
-
+                    {job.company_name || "Company"}
                   </p>
-
 
                   <p className="admin-job-details">
-
-                    Location:
-                    {" "}
-                    {job.location}
-
+                    Location: {job.location}
                   </p>
-
 
                   <p className="admin-job-details">
-
-                    Salary:
-                    {" "}
-                    {job.salary}
-
+                    Salary: {job.salary}
                   </p>
-
 
                   <p className="admin-job-details">
-
-                    Type:
-                    {" "}
-                    {job.type}
-
+                    Type: {job.type}
                   </p>
-
 
                   <p className="admin-job-details">
-
-                    Skills:
-                    {" "}
-                    {job.skills}
-
+                    Skills: {job.skills}
                   </p>
-
                 </div>
 
-
-                {/* =====================================
-                    JOB ACTIONS
-                ===================================== */}
-
+                {/* Job Actions */}
                 <div className="admin-job-actions">
-
-
-                  {/* EDIT */}
-
                   <button
                     className="admin-edit-btn"
                     onClick={() => {
-
-                      alert(
-                        `Edit Job: ${job.title}`
-                      );
-
+                      alert(`Edit Job: ${job.title}`);
                     }}
                   >
-
                     Edit
-
                   </button>
-
-
-                  {/* DELETE */}
 
                   <button
                     className="admin-delete-btn"
                     onClick={() => {
-
-                      handleDeleteJob(
-                        job.id
-                      );
-
+                      handleDeleteJob(job.id);
                     }}
                   >
-
                     Delete
-
                   </button>
-
-
                 </div>
-
-
               </div>
-
             ))}
-
           </div>
-
         )}
-
       </div>
-
     </div>
-
   );
-
 }
 
 export default AdminDashboard;

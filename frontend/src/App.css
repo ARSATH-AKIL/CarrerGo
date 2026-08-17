@@ -12,10 +12,18 @@ html {
   scroll-behavior: smooth;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #f5f7fb;
   color: #1e293b;
+  overflow-x: hidden;
 }
 
 a {
@@ -56,7 +64,6 @@ textarea {
   display: flex;
   align-items: center;
   min-width: 180px;
-  border-radius: 50px;
 }
 
 .navbar-logo a {
@@ -83,28 +90,21 @@ textarea {
 
 .navbar-links a {
   position: relative;
-
   text-decoration: none;
   color: #334155;
-
   font-size: 15px;
   font-weight: 600;
-
   padding: 27px 0;
 }
 
 .navbar-links a::after {
   content: "";
-
   position: absolute;
   left: 0;
   bottom: 17px;
-
   width: 0;
   height: 2px;
-
   background: #d4a72c;
-
   transition: width 0.25s ease;
 }
 
@@ -140,8 +140,6 @@ textarea {
   font-weight: 600;
 
   text-decoration: none;
-
-  transition: all 0.2s ease;
 }
 
 .login-btn {
@@ -164,7 +162,6 @@ textarea {
 
 .register-btn:hover {
   background: #142a45;
-  border-color: #142a45;
 }
 
 
@@ -251,20 +248,15 @@ textarea {
 
   padding: 13px 16px;
 
-  box-sizing: border-box;
-
   text-align: left;
-
   text-decoration: none;
 
   color: #334155;
-
   background: #ffffff;
 
   border: none;
 
   font-size: 14px;
-
   cursor: pointer;
 }
 
@@ -284,9 +276,16 @@ textarea {
 ========================================================= */
 
 .hero {
+  width: 100%;
+  min-height: calc(100vh - 76px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   text-align: center;
 
-  padding: 120px 20px;
+  padding: 60px 20px;
 
   background: linear-gradient(
     180deg,
@@ -295,13 +294,18 @@ textarea {
   );
 }
 
+.hero-content {
+  width: 100%;
+  max-width: 1100px;
+}
+
 .hero h2 {
+  margin: 0 0 18px;
+
   font-size: 52px;
+  line-height: 1.15;
 
   color: #1e293b;
-
-  margin-bottom: 20px;
-
   font-weight: 700;
 }
 
@@ -310,17 +314,22 @@ textarea {
 }
 
 .hero p {
+  max-width: 700px;
+
+  margin: 0 auto 30px;
+
   font-size: 18px;
+  line-height: 1.6;
 
   color: #64748b;
-
-  margin-bottom: 35px;
 }
 
 .search-box {
-  display: flex;
+  width: 100%;
 
+  display: flex;
   justify-content: center;
+  align-items: center;
 
   gap: 10px;
 }
@@ -331,13 +340,11 @@ textarea {
   padding: 15px;
 
   border: 1px solid #ddd;
-
   border-radius: 8px;
 
   font-size: 15px;
 
   outline: none;
-
   background: #ffffff;
 }
 
@@ -349,14 +356,13 @@ textarea {
   padding: 15px 25px;
 
   border: none;
-
   border-radius: 8px;
 
   background: #1e3a5f;
-
-  color: white;
+  color: #ffffff;
 
   font-size: 15px;
+  font-weight: 600;
 
   cursor: pointer;
 }
@@ -371,39 +377,37 @@ textarea {
 ========================================================= */
 
 .auth-page {
+  width: 100%;
   min-height: calc(100vh - 76px);
 
   display: flex;
-
   justify-content: center;
-
   align-items: center;
 
-  padding: 50px 20px;
+  padding: 35px 20px;
 
   background: #f5f7fb;
 }
 
 .auth-card {
   width: 100%;
-
   max-width: 420px;
 
-  padding: 40px;
+  padding: 35px;
 
   background: #ffffff;
 
   border: 1px solid #e8e8e8;
-
   border-radius: 16px;
 
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
 }
 
-.auth-card h1 {
+.auth-card h1,
+.auth-card h2 {
   text-align: center;
 
-  margin-bottom: 10px;
+  margin: 0 0 10px;
 
   color: #1e293b;
 }
@@ -413,14 +417,12 @@ textarea {
 
   color: #666;
 
-  margin-bottom: 25px;
+  margin: 0 0 25px;
 }
 
 .auth-card form {
   display: flex;
-
   flex-direction: column;
-
   gap: 15px;
 }
 
@@ -431,13 +433,11 @@ textarea {
   padding: 13px;
 
   border: 1px solid #d5d5d5;
-
   border-radius: 8px;
 
   font-size: 15px;
 
   background: #ffffff;
-
   outline: none;
 }
 
@@ -447,27 +447,45 @@ textarea {
 }
 
 .auth-card form button {
+  width: 100%;
+
   padding: 13px;
 
   border: none;
-
   border-radius: 8px;
 
   background: #1e3a5f;
-
-  color: white;
+  color: #ffffff;
 
   cursor: pointer;
 
   font-size: 16px;
+  font-weight: 600;
 }
 
 .auth-card form button:hover {
   background: #142a45;
 }
 
+.auth-card form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-message {
+  margin: 0 !important;
+
+  text-align: center;
+
+  color: #b8860b !important;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .auth-footer {
-  margin-top: 20px;
+  margin-top: 20px !important;
+  margin-bottom: 0 !important;
 
   text-align: center;
 }
@@ -478,6 +496,10 @@ textarea {
   text-decoration: none;
 
   font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
 }
 
 
@@ -546,7 +568,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   cursor: pointer;
 }
@@ -561,6 +583,7 @@ textarea {
 ========================================================= */
 
 .jobs-filter-box {
+  width: 100%;
   max-width: 1100px;
 
   margin: 0 auto 25px;
@@ -582,6 +605,8 @@ textarea {
 
 .jobs-filter-box input,
 .jobs-filter-box select {
+  width: 100%;
+
   padding: 13px 15px;
 
   border: 1px solid #ddd;
@@ -632,12 +657,11 @@ textarea {
 
 
 /* =========================================================
-   4 COLUMN JOB GRID
+   JOB GRID
 ========================================================= */
 
 .jobs-container {
   width: 100%;
-
   max-width: 1200px;
 
   margin: 30px auto;
@@ -650,6 +674,7 @@ textarea {
 }
 
 .jobs-list {
+  width: 100%;
   max-width: 1100px;
 
   margin: auto;
@@ -668,7 +693,6 @@ textarea {
 
 .job-card {
   width: 100%;
-
   min-width: 0;
 
   padding: 25px;
@@ -680,8 +704,6 @@ textarea {
   border-radius: 14px;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-
-  box-sizing: border-box;
 
   transition:
     transform 0.2s ease,
@@ -763,7 +785,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   padding: 11px 18px;
 
@@ -787,7 +809,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   cursor: pointer;
 }
@@ -798,19 +820,17 @@ textarea {
 
 .save-job-btn {
   width: 52px;
-
   height: 52px;
 
   border: 1px solid #ddd;
 
   border-radius: 10px;
 
-  background: #fff;
+  background: #ffffff;
 
   display: flex;
 
   align-items: center;
-
   justify-content: center;
 
   cursor: pointer;
@@ -868,6 +888,8 @@ textarea {
 ========================================================= */
 
 .companies-page {
+  min-height: calc(100vh - 76px);
+
   padding: 60px 7%;
 
   background: #f5f7fb;
@@ -891,7 +913,6 @@ textarea {
 
 .companies-container {
   width: 100%;
-
   max-width: 1200px;
 
   margin: auto;
@@ -905,7 +926,6 @@ textarea {
 
 .company-card {
   width: 100%;
-
   min-width: 0;
 
   padding: 28px 22px;
@@ -920,8 +940,6 @@ textarea {
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 
-  box-sizing: border-box;
-
   transition: 0.2s ease;
 }
 
@@ -933,7 +951,6 @@ textarea {
 
 .company-logo {
   width: 65px;
-
   height: 65px;
 
   margin: 0 auto 15px;
@@ -941,7 +958,6 @@ textarea {
   display: flex;
 
   align-items: center;
-
   justify-content: center;
 
   border-radius: 50%;
@@ -978,7 +994,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   cursor: pointer;
 }
@@ -1084,11 +1100,12 @@ textarea {
 }
 
 .job-details-card {
+  width: 100%;
   max-width: 900px;
 
   margin: auto;
 
-  background: white;
+  background: #ffffff;
 
   padding: 40px;
 
@@ -1101,7 +1118,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: flex-start;
 
   gap: 20px;
@@ -1215,7 +1231,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 }
 
 .apply-now-btn:hover {
@@ -1223,13 +1239,13 @@ textarea {
 }
 
 .back-jobs-btn {
-  background: #eee;
+  background: #eeeeee;
 
   color: #333;
 }
 
 .back-jobs-btn:hover {
-  background: #ddd;
+  background: #dddddd;
 }
 
 .job-not-found {
@@ -1263,12 +1279,11 @@ textarea {
 
 .apply-card {
   width: 100%;
-
   max-width: 600px;
 
   padding: 35px;
 
-  background: white;
+  background: #ffffff;
 
   border: 1px solid #eee;
 
@@ -1326,7 +1341,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   cursor: pointer;
 }
@@ -1346,20 +1361,18 @@ textarea {
   display: flex;
 
   justify-content: center;
-
   align-items: center;
 
-  padding: 50px 20px;
+  padding: 40px 20px;
 
   background: #f5f7fb;
 }
 
 .company-register-card {
   width: 100%;
-
   max-width: 500px;
 
-  background: white;
+  background: #ffffff;
 
   padding: 35px 40px;
 
@@ -1425,7 +1438,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 }
 
 .company-register-card button:hover {
@@ -1459,7 +1472,6 @@ textarea {
   display: flex;
 
   justify-content: center;
-
   align-items: center;
 
   padding: 40px 20px;
@@ -1469,7 +1481,6 @@ textarea {
 
 .company-login-card {
   width: 100%;
-
   max-width: 420px;
 
   padding: 35px;
@@ -1534,7 +1545,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   font-size: 16px;
 
@@ -1565,6 +1576,7 @@ textarea {
 ========================================================= */
 
 .company-dashboard {
+  width: 100%;
   max-width: 1200px;
 
   margin: 0 auto;
@@ -1576,7 +1588,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 
   margin-bottom: 35px;
@@ -1599,7 +1610,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   text-decoration: none;
 
@@ -1626,18 +1637,15 @@ textarea {
 
 .dashboard-card {
   width: 100%;
-
   min-width: 0;
 
   padding: 25px;
 
-  background: white;
+  background: #ffffff;
 
   border-radius: 12px;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-
-  box-sizing: border-box;
 }
 
 .dashboard-card h3 {
@@ -1666,12 +1674,11 @@ textarea {
 
 .dashboard-action {
   width: 100%;
-
   min-width: 0;
 
   padding: 25px;
 
-  background: white;
+  background: #ffffff;
 
   border-radius: 12px;
 
@@ -1680,8 +1687,6 @@ textarea {
   color: #222;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-
-  box-sizing: border-box;
 
   transition: 0.2s ease;
 }
@@ -1717,7 +1722,6 @@ textarea {
 
 .post-job-card {
   width: 100%;
-
   max-width: 800px;
 
   margin: 0 auto;
@@ -1784,7 +1788,7 @@ textarea {
 
   border-radius: 8px;
 
-  background: #fff;
+  background: #ffffff;
 
   font-size: 15px;
 
@@ -1795,8 +1799,6 @@ textarea {
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: #d4a72c;
-
-  box-shadow: 0 0 0 2px rgba(212, 167, 44, 0.1);
 }
 
 .form-group textarea {
@@ -1815,7 +1817,6 @@ textarea {
   display: flex;
 
   justify-content: flex-end;
-
   align-items: center;
 
   gap: 12px;
@@ -1852,7 +1853,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   font-size: 15px;
 
@@ -1886,7 +1887,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 }
 
@@ -1905,7 +1905,7 @@ textarea {
 .my-job-card {
   padding: 25px;
 
-  background: white;
+  background: #ffffff;
 
   border-radius: 12px;
 
@@ -1976,7 +1976,7 @@ textarea {
 .edit-job-btn {
   border: 1px solid #1e3a5f;
 
-  background: white;
+  background: #ffffff;
 
   color: #1e3a5f;
 }
@@ -1990,7 +1990,7 @@ textarea {
 
   background: #dc2626;
 
-  color: white;
+  color: #ffffff;
 }
 
 .delete-job-btn:hover {
@@ -2012,14 +2012,13 @@ textarea {
 
 .edit-job-card {
   width: 100%;
-
   max-width: 800px;
 
   margin: 0 auto;
 
   padding: 35px;
 
-  background: white;
+  background: #ffffff;
 
   border-radius: 16px;
 
@@ -2124,7 +2123,7 @@ textarea {
 }
 
 .edit-cancel-btn {
-  background: #eee;
+  background: #eeeeee;
 
   color: #333;
 }
@@ -2134,7 +2133,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 }
 
 .edit-save-btn:hover {
@@ -2172,7 +2171,6 @@ textarea {
 
 .applications-list {
   width: 100%;
-
   max-width: 1200px;
 
   margin: 30px auto;
@@ -2186,10 +2184,9 @@ textarea {
 
 .application-card {
   width: 100%;
-
   min-width: 0;
 
-  background: white;
+  background: #ffffff;
 
   border-radius: 14px;
 
@@ -2204,8 +2201,6 @@ textarea {
   gap: 20px;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-
-  box-sizing: border-box;
 }
 
 .application-info h2 {
@@ -2259,19 +2254,19 @@ textarea {
 }
 
 .view-profile-btn {
-  background: #eee;
+  background: #eeeeee;
 }
 
 .accept-btn {
   background: #22c55e;
 
-  color: white;
+  color: #ffffff;
 }
 
 .reject-btn {
   background: #ef4444;
 
-  color: white;
+  color: #ffffff;
 }
 
 
@@ -2288,11 +2283,12 @@ textarea {
 }
 
 .company-profile-card {
+  width: 100%;
   max-width: 850px;
 
   margin: auto;
 
-  background: white;
+  background: #ffffff;
 
   padding: 35px;
 
@@ -2305,7 +2301,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 
   margin-bottom: 35px;
@@ -2341,7 +2336,7 @@ textarea {
 .profile-save-btn {
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 }
 
 .profile-edit-btn:hover,
@@ -2350,7 +2345,7 @@ textarea {
 }
 
 .profile-cancel-btn {
-  background: #eee;
+  background: #eeeeee;
 
   color: #333;
 }
@@ -2441,11 +2436,12 @@ textarea {
 }
 
 .profile-card {
+  width: 100%;
   max-width: 900px;
 
   margin: auto;
 
-  background: white;
+  background: #ffffff;
 
   padding: 35px;
 
@@ -2466,7 +2462,6 @@ textarea {
 
 .profile-avatar {
   width: 70px;
-
   height: 70px;
 
   border-radius: 50%;
@@ -2474,12 +2469,11 @@ textarea {
   display: flex;
 
   align-items: center;
-
   justify-content: center;
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   font-size: 28px;
 
@@ -2535,6 +2529,7 @@ textarea {
 
   outline: none;
 }
+
 .profile-form-group input:focus,
 .profile-form-group select:focus,
 .profile-form-group textarea:focus {
@@ -2584,7 +2579,6 @@ textarea {
 
 .applied-jobs-list {
   width: 100%;
-
   max-width: 1200px;
 
   margin: 30px auto;
@@ -2598,10 +2592,9 @@ textarea {
 
 .applied-job-card {
   width: 100%;
-
   min-width: 0;
 
-  background: white;
+  background: #ffffff;
 
   padding: 25px;
 
@@ -2616,8 +2609,6 @@ textarea {
   gap: 20px;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-
-  box-sizing: border-box;
 }
 
 .applied-job-info h2 {
@@ -2685,7 +2676,7 @@ textarea {
 .withdraw-btn {
   border: 1px solid #ddd;
 
-  background: white;
+  background: #ffffff;
 
   padding: 9px 15px;
 
@@ -2699,7 +2690,7 @@ textarea {
 }
 
 .no-applications {
-  background: white;
+  background: #ffffff;
 
   text-align: center;
 
@@ -2725,7 +2716,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 }
 
@@ -2745,7 +2735,6 @@ textarea {
 
 .saved-jobs-list {
   width: 100%;
-
   max-width: 1200px;
 
   margin: 30px auto;
@@ -2759,23 +2748,19 @@ textarea {
 
 .saved-job-card {
   width: 100%;
-
   min-width: 0;
 
   padding: 25px;
 
-  background: white;
+  background: #ffffff;
 
   border-radius: 14px;
 
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-
-  box-sizing: border-box;
 }
 
 .empty-save-icon {
   width: 80px;
-
   height: 80px;
 
   margin: 0 auto 20px;
@@ -2783,7 +2768,6 @@ textarea {
   display: flex;
 
   justify-content: center;
-
   align-items: center;
 
   border-radius: 50%;
@@ -2802,7 +2786,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   text-decoration: none;
 
@@ -2853,7 +2837,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   border-radius: 6px;
 
@@ -2872,7 +2856,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 
   margin-top: 15px;
@@ -2901,7 +2884,7 @@ textarea {
 
   background: #16a34a;
 
-  color: white;
+  color: #ffffff;
 
   font-size: 14px;
 
@@ -2930,6 +2913,8 @@ textarea {
 ========================================================= */
 
 .admin-dashboard {
+  width: 100%;
+
   padding: 50px 3%;
 
   background: #f5f7fb;
@@ -2985,7 +2970,6 @@ textarea {
   flex-direction: column;
 
   justify-content: center;
-
   align-items: center;
 
   text-align: center;
@@ -3034,7 +3018,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 
   margin-bottom: 25px;
@@ -3053,7 +3036,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   padding: 12px 20px;
 
@@ -3088,7 +3071,6 @@ textarea {
   display: flex;
 
   justify-content: space-between;
-
   align-items: center;
 
   gap: 25px;
@@ -3158,7 +3140,7 @@ textarea {
 .admin-delete-btn {
   background: #ef4444;
 
-  color: white;
+  color: #ffffff;
 }
 
 .admin-delete-btn:hover {
@@ -3193,11 +3175,12 @@ textarea {
 }
 
 .apply-job-card {
+  width: 100%;
   max-width: 750px;
 
   margin: auto;
 
-  background: white;
+  background: #ffffff;
 
   padding: 40px;
 
@@ -3281,7 +3264,7 @@ textarea {
 
   background: #1e3a5f;
 
-  color: white;
+  color: #ffffff;
 
   font-size: 16px;
 
@@ -3320,7 +3303,6 @@ textarea {
 ========================================================= */
 
 @media (max-width: 1000px) {
-
   .navbar {
     padding: 0 25px;
   }
@@ -3342,7 +3324,6 @@ textarea {
   .admin-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
 }
 
 
@@ -3351,7 +3332,6 @@ textarea {
 ========================================================= */
 
 @media (max-width: 800px) {
-
   .jobs-filter-box {
     grid-template-columns: 1fr;
   }
@@ -3369,6 +3349,9 @@ textarea {
     min-width: 0;
   }
 
+  .navbar-links {
+    gap: 18px;
+  }
 }
 
 
@@ -3377,7 +3360,6 @@ textarea {
 ========================================================= */
 
 @media (max-width: 700px) {
-
   .navbar {
     min-height: 70px;
 
@@ -3395,7 +3377,6 @@ textarea {
   .careergo-logo,
   .navbar-logo img {
     width: 120px;
-
     height: 50px;
   }
 
@@ -3501,7 +3482,6 @@ textarea {
 
     gap: 15px;
   }
-
 }
 
 
@@ -3510,7 +3490,6 @@ textarea {
 ========================================================= */
 
 @media (max-width: 650px) {
-
   .post-job-page {
     padding: 30px 15px;
   }
@@ -3564,7 +3543,6 @@ textarea {
   .company-register-card {
     padding: 30px 22px;
   }
-
 }
 
 
@@ -3573,13 +3551,18 @@ textarea {
 ========================================================= */
 
 @media (max-width: 600px) {
-
   .hero {
-    padding: 80px 20px;
+    min-height: calc(100vh - 70px);
+
+    padding: 50px 20px;
   }
 
   .hero h2 {
     font-size: 38px;
+  }
+
+  .hero p {
+    font-size: 16px;
   }
 
   .search-box {
@@ -3588,12 +3571,7 @@ textarea {
     align-items: center;
   }
 
-  .search-box input {
-    width: 100%;
-
-    max-width: 350px;
-  }
-
+  .search-box input,
   .search-box button {
     width: 100%;
 
@@ -3651,6 +3629,17 @@ textarea {
     font-size: 28px;
   }
 
+  .job-search {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .job-search input,
+  .job-search button {
+    width: 100%;
+    max-width: 350px;
+  }
+
   .admin-dashboard {
     padding: 30px 20px;
   }
@@ -3674,6 +3663,13 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .auth-page {
+    padding: 30px 15px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+  }
 }
 
 
@@ -3682,7 +3678,6 @@ textarea {
 ========================================================= */
 
 @media (max-width: 480px) {
-
   .navbar {
     padding: 10px 14px;
   }
@@ -3690,16 +3685,30 @@ textarea {
   .careergo-logo,
   .navbar-logo img {
     width: 105px;
-
     height: 45px;
   }
 
   .navbar-links {
     gap: 15px;
+
+    overflow-x: auto;
+
+    justify-content: flex-start;
+
+    padding-left: 5px;
+    padding-right: 5px;
+
+    scrollbar-width: none;
+  }
+
+  .navbar-links::-webkit-scrollbar {
+    display: none;
   }
 
   .navbar-links a {
     font-size: 13px;
+
+    white-space: nowrap;
   }
 
   .login-btn,
@@ -3723,6 +3732,31 @@ textarea {
     white-space: nowrap;
   }
 
+  .hero h2 {
+    font-size: 32px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .auth-card {
+    padding: 25px 18px;
+  }
+
+  .job-details-card,
+  .apply-job-card,
+  .company-profile-card,
+  .profile-card {
+    padding: 22px 16px;
+  }
+
+  .admin-job-actions {
+    flex-direction: column;
+  }
+
+  .admin-edit-btn,
+  .admin-delete-btn {
+    width: 100%;
+  }
 }
-
-
