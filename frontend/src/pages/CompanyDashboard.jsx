@@ -10,7 +10,6 @@ function CompanyDashboard() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   // =====================================================
   // GET COMPANY DATA
   // =====================================================
@@ -21,9 +20,7 @@ function CompanyDashboard() {
       localStorage.getItem("company");
 
     if (!storedCompany) {
-
       navigate("/company-login");
-
       return;
     }
 
@@ -39,16 +36,14 @@ function CompanyDashboard() {
       // =================================================
 
       fetch(
-        'https://servercarrergo.onrender.com/api/company/jobs/${companyData.id}'
+        `https://servercarrergo.onrender.com/api/company/jobs/${companyData.id}`
       )
         .then((response) => {
 
           if (!response.ok) {
-
             throw new Error(
               "Unable to get company jobs"
             );
-
           }
 
           return response.json();
@@ -73,6 +68,8 @@ function CompanyDashboard() {
             error
           );
 
+          setJobs([]);
+
         });
 
 
@@ -86,11 +83,9 @@ function CompanyDashboard() {
         .then((response) => {
 
           if (!response.ok) {
-
             throw new Error(
               "Unable to get company applications"
             );
-
           }
 
           return response.json();
@@ -114,6 +109,8 @@ function CompanyDashboard() {
             "COMPANY APPLICATIONS ERROR:",
             error
           );
+
+          setApplications([]);
 
         })
         .finally(() => {
@@ -148,7 +145,9 @@ function CompanyDashboard() {
     (job) => {
 
       const status =
-        job.status?.toLowerCase();
+        String(job.status || "")
+          .toLowerCase()
+          .trim();
 
       return status !== "closed";
 
@@ -165,7 +164,9 @@ function CompanyDashboard() {
       (application) => {
 
         const status =
-          application.status?.toLowerCase();
+          String(application.status || "")
+            .toLowerCase()
+            .trim();
 
         return (
           status === "applied" ||
@@ -185,7 +186,9 @@ function CompanyDashboard() {
       (application) => {
 
         const status =
-          application.status?.toLowerCase();
+          String(application.status || "")
+            .toLowerCase()
+            .trim();
 
         return (
           status === "accepted" ||
@@ -205,7 +208,9 @@ function CompanyDashboard() {
       (application) => {
 
         const status =
-          application.status?.toLowerCase();
+          String(application.status || "")
+            .toLowerCase()
+            .trim();
 
         return (
           status === "rejected" ||
@@ -214,43 +219,6 @@ function CompanyDashboard() {
 
       }
     ).length;
-
-
-  // =====================================================
-  // VIEW APPLICANT RESUME
-  // =====================================================
-
-  const handleViewResume = (
-    application
-  ) => {
-
-    if (
-      !application.resume_available ||
-      !application.resume_view_url
-    ) {
-
-      alert(
-        "This applicant has not uploaded a resume."
-      );
-
-      return;
-    }
-
-    const resumeUrl =
-      `https://servercarrergo.onrender.com${application.resume_view_url}`;
-
-    console.log(
-      "OPENING RESUME:",
-      resumeUrl
-    );
-
-    window.open(
-      resumeUrl,
-      "_blank",
-      "noopener,noreferrer"
-    );
-
-  };
 
 
   // =====================================================
@@ -329,6 +297,7 @@ function CompanyDashboard() {
             + Post a Job
           </Link>
 
+
           <button
             type="button"
             className="company-logout-btn"
@@ -379,7 +348,9 @@ function CompanyDashboard() {
       <div className="dashboard-cards">
 
 
-        {/* ACTIVE JOBS */}
+        {/* =================================================
+            ACTIVE JOBS
+        ================================================= */}
 
         <div className="dashboard-card">
 
@@ -398,7 +369,9 @@ function CompanyDashboard() {
         </div>
 
 
-        {/* PENDING */}
+        {/* =================================================
+            PENDING APPLICATIONS
+        ================================================= */}
 
         <div className="dashboard-card">
 
@@ -417,7 +390,9 @@ function CompanyDashboard() {
         </div>
 
 
-        {/* ACCEPTED */}
+        {/* =================================================
+            ACCEPTED APPLICATIONS
+        ================================================= */}
 
         <div className="dashboard-card">
 
@@ -436,7 +411,9 @@ function CompanyDashboard() {
         </div>
 
 
-        {/* REJECTED */}
+        {/* =================================================
+            REJECTED APPLICATIONS
+        ================================================= */}
 
         <div className="dashboard-card">
 
@@ -464,7 +441,9 @@ function CompanyDashboard() {
       <div className="dashboard-actions">
 
 
-        {/* POST JOB */}
+        {/* =================================================
+            POST JOB
+        ================================================= */}
 
         <Link
           to="/post-job"
@@ -482,7 +461,9 @@ function CompanyDashboard() {
         </Link>
 
 
-        {/* MY JOBS */}
+        {/* =================================================
+            MY JOBS
+        ================================================= */}
 
         <Link
           to="/my-jobs"
@@ -500,7 +481,9 @@ function CompanyDashboard() {
         </Link>
 
 
-        {/* APPLICATIONS */}
+        {/* =================================================
+            APPLICATIONS
+        ================================================= */}
 
         <Link
           to="/applications"
@@ -518,7 +501,9 @@ function CompanyDashboard() {
         </Link>
 
 
-        {/* COMPANY DETAILS */}
+        {/* =================================================
+            COMPANY DETAILS
+        ================================================= */}
 
         <Link
           to="/company-details"
@@ -535,214 +520,6 @@ function CompanyDashboard() {
           </p>
 
         </Link>
-
-      </div>
-
-
-      {/* =================================================
-          APPLICANTS SECTION
-      ================================================= */}
-
-      <div className="company-applications-section">
-
-
-        {/* SECTION HEADER */}
-
-        <div className="applications-header">
-
-          <h2>
-            Applicants
-          </h2>
-
-          <p>
-            Candidates who applied for
-            your jobs.
-          </p>
-
-        </div>
-
-
-        {/* =================================================
-            NO APPLICATIONS
-        ================================================= */}
-
-        {applications.length === 0 ? (
-
-          <div className="no-applications">
-
-            <div className="no-applications-icon">
-              📋
-            </div>
-
-            <h3>
-              No Applications Yet
-            </h3>
-
-            <p>
-              Applicants will appear here
-              when they apply for your jobs.
-            </p>
-
-          </div>
-
-        ) : (
-
-
-          /* =================================================
-             APPLICATION CARDS
-          ================================================= */
-
-          <div className="company-applications-list">
-
-            {applications.map(
-              (application) => (
-
-                <div
-                  className="company-application-card"
-                  key={application.id}
-                >
-
-
-                  {/* =========================================
-                      APPLICANT INFORMATION
-                  ========================================= */}
-
-                  <div className="applicant-info">
-
-
-                    {/* PROFILE ICON */}
-
-                    <div className="applicant-avatar">
-                      👤
-                    </div>
-
-
-                    <div className="applicant-details">
-
-                      <h3>
-                        {
-                          application.applicant_name
-                        }
-                      </h3>
-
-
-                      <p>
-                        📧{" "}
-                        {
-                          application.applicant_email
-                        }
-                      </p>
-
-
-                      <p>
-                        💼{" "}
-                        {
-                          application.job_title
-                        }
-                      </p>
-
-
-                      <p>
-                        📍{" "}
-                        {
-                          application.location ||
-                          "Location not available"
-                        }
-                      </p>
-
-
-                      <p>
-                        📅 Applied:{" "}
-
-                        {application.applied_at
-                          ? new Date(
-                              application.applied_at
-                            ).toLocaleDateString(
-                              "en-IN"
-                            )
-                          : "N/A"}
-
-                      </p>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* =========================================
-                      RIGHT SIDE ACTIONS
-                  ========================================= */}
-
-                  <div className="applicant-actions">
-
-
-                    {/* STATUS */}
-
-                    <span
-                      className={`application-status ${
-                        String(
-                          application.status ||
-                          "Applied"
-                        )
-                          .toLowerCase()
-                          .replace(
-                            /\s+/g,
-                            "-"
-                          )
-                      }`}
-                    >
-
-                      {
-                        application.status ||
-                        "Applied"
-                      }
-
-                    </span>
-
-
-                    {/* =====================================
-                        RESUME BUTTON
-                        INSIDE SAME CARD
-                    ===================================== */}
-
-                    {application.resume_available ? (
-
-                      <button
-                        type="button"
-                        className="view-resume-btn"
-                        onClick={() =>
-                          handleViewResume(
-                            application
-                          )
-                        }
-                      >
-
-                        📄 View Resume
-
-                      </button>
-
-                    ) : (
-
-                      <span
-                        className="no-resume"
-                      >
-
-                        Resume not uploaded
-
-                      </span>
-
-                    )}
-
-                  </div>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        )}
 
       </div>
 
