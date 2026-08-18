@@ -423,7 +423,7 @@ textarea {
 .auth-card input,
 .auth-card select {
   width: 100%;
-
+ color: #000000;
   padding: 13px;
 
   border: 1px solid #d5d5d5;
