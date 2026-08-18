@@ -120,8 +120,7 @@ function CompanyDashboard() {
             type="button"
             className="company-logout-btn"
             onClick={handleLogout}
-          >
-            Logout
+          ></button>
           </button>
         </div>
       </div>
