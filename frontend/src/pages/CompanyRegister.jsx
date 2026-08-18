@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function CompanyRegister() {
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -23,12 +24,10 @@ function CompanyRegister() {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     setMessage("");
 
-    // Password validation
     if (formData.password !== formData.confirmPassword) {
       setMessage("Passwords do not match");
       return;
@@ -37,16 +36,13 @@ function CompanyRegister() {
     setLoading(true);
 
     try {
-
       const response = await fetch(
         "https://servercarrergo.onrender.com/api/company/register",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
@@ -62,65 +58,36 @@ function CompanyRegister() {
       console.log("Backend Response:", data);
 
       if (response.ok) {
-
-        setMessage(
-          data.message || "Company registered successfully"
-        );
-
-        setFormData({
-          name: "",
-          email: "",
-          location: "",
-          industry: "",
-          password: "",
-          confirmPassword: ""
-        });
-
+        navigate("/company-login");
       } else {
-
         setMessage(
           data.message || "Company registration failed"
         );
-
       }
-
     } catch (error) {
-
       console.error("Company Register Error:", error);
 
       setMessage(
         "Unable to connect to CareerGo backend"
       );
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
   return (
-
     <div className="company-register-page">
-
       <div className="company-register-card">
-
         <div className="company-register-header">
-
           <h2>Register Your Company</h2>
 
           <p>
             Create a company account on CareerGo
           </p>
-
         </div>
 
         <form onSubmit={handleSubmit}>
-
-          {/* Company Name */}
-
           <div className="register-form-group">
-
             <label>Company Name</label>
 
             <input
@@ -131,11 +98,9 @@ function CompanyRegister() {
               onChange={handleChange}
               required
             />
-
           </div>
 
           <div className="register-form-group">
-
             <label>Company Email</label>
 
             <input
@@ -146,13 +111,9 @@ function CompanyRegister() {
               onChange={handleChange}
               required
             />
-
           </div>
 
-          {/* Location */}
-
           <div className="register-form-group">
-
             <label>Company Location</label>
 
             <input
@@ -162,13 +123,9 @@ function CompanyRegister() {
               value={formData.location}
               onChange={handleChange}
             />
-
           </div>
 
-          {/* Industry */}
-
           <div className="register-form-group">
-
             <label>Industry</label>
 
             <input
@@ -178,13 +135,9 @@ function CompanyRegister() {
               value={formData.industry}
               onChange={handleChange}
             />
-
           </div>
 
-          {/* Password */}
-
           <div className="register-form-group">
-
             <label>Create Password</label>
 
             <input
@@ -195,13 +148,9 @@ function CompanyRegister() {
               onChange={handleChange}
               required
             />
-
           </div>
 
-          {/* Confirm Password */}
-
           <div className="register-form-group">
-
             <label>Confirm Password</label>
 
             <input
@@ -212,24 +161,16 @@ function CompanyRegister() {
               onChange={handleChange}
               required
             />
-
           </div>
-
-          {/* Register Button */}
 
           <button
             type="submit"
             className="company-register-btn"
             disabled={loading}
           >
-
             {loading ? "Registering..." : "Register Company"}
-
           </button>
-
         </form>
-
-        {/* Message */}
 
         {message && (
           <p className="register-message">
@@ -237,22 +178,15 @@ function CompanyRegister() {
           </p>
         )}
 
-        {/* Company Login */}
-
         <p className="company-register-footer">
-
           Already have a company account?
 
           <Link to="/company-login">
             {" "}Company Login
           </Link>
-
         </p>
-
       </div>
-
     </div>
-
   );
 }
 
