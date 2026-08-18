@@ -379,30 +379,23 @@ textarea {
 .auth-page {
   width: 100%;
   min-height: calc(100vh - 76px);
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   padding: 35px 20px;
-
   background: #f5f7fb;
 }
 
 .auth-card {
   width: 100%;
   max-width: 420px;
-
   padding: 35px;
-
+  color: black;
   background: #ffffff;
-
   border: 1px solid #e8e8e8;
   border-radius: 16px;
-
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
 }
-
 .auth-card h1,
 .auth-card h2 {
   text-align: center;
