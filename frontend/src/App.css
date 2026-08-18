@@ -862,6 +862,7 @@ textarea {
   width: 100%;
   max-width: 600px;
   padding: 35px;
+  color:#000000;
   background: #ffffff;
   border: 1px solid #eee;
   border-radius: 14px;
@@ -870,10 +871,12 @@ textarea {
 .apply-card h1 {
   margin-bottom: 20px;
   font-size: 40px;
+color:#000000;
 }
 .apply-card > p {
   color: #666;
   margin-bottom: 25px;
+   color:#000000;
 }
 .apply-card form {
   display: flex;
