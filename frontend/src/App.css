@@ -910,7 +910,7 @@ textarea {
   max-width: 1200px;
 
   margin: auto;
-
+ color: #000000;
   display: grid;
 
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -921,7 +921,7 @@ textarea {
 .company-card {
   width: 100%;
   min-width: 0;
-
+  
   padding: 28px 22px;
 
   text-align: center;
@@ -967,7 +967,7 @@ textarea {
 
 .company-card h2 {
   font-size: 20px;
-
+  color: #000000;
   margin-bottom: 15px;
 }
 
