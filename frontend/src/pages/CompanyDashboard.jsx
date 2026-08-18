@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 
 function CompanyDashboard() {
   const navigate = useNavigate();
-
   const [company, setCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showCompanyDetails, setShowCompanyDetails] = useState(false);
 
-  // Get company data
   useEffect(() => {
     const storedCompany = localStorage.getItem("company");
 
@@ -22,7 +21,6 @@ function CompanyDashboard() {
       const companyData = JSON.parse(storedCompany);
       setCompany(companyData);
 
-      // Get company jobs
       fetch(
         `https://servercarrergo.onrender.com/api/company/jobs/${companyData.id}`
       )
@@ -30,7 +28,6 @@ function CompanyDashboard() {
           if (!response.ok) {
             throw new Error("Unable to get company jobs");
           }
-
           return response.json();
         })
         .then((data) => {
@@ -42,7 +39,6 @@ function CompanyDashboard() {
           setJobs([]);
         });
 
-      // Get company applications
       fetch(
         `https://servercarrergo.onrender.com/api/company/applications/${companyData.id}`
       )
@@ -50,7 +46,6 @@ function CompanyDashboard() {
           if (!response.ok) {
             throw new Error("Unable to get company applications");
           }
-
           return response.json();
         })
         .then((data) => {
@@ -66,55 +61,40 @@ function CompanyDashboard() {
         });
     } catch (error) {
       console.error("COMPANY DATA ERROR:", error);
-
       localStorage.removeItem("company");
       navigate("/company-login");
     }
   }, [navigate]);
 
-  // Active jobs
   const activeJobs = jobs.filter((job) => {
-    const status = String(job.status || "")
-      .toLowerCase()
-      .trim();
-
+    const status = String(job.status || "").toLowerCase().trim();
     return status !== "closed";
   }).length;
 
-  // Pending applications
   const pendingApplications = applications.filter((application) => {
-    const status = String(application.status || "")
-      .toLowerCase()
-      .trim();
-
+    const status = String(application.status || "").toLowerCase().trim();
     return status === "applied" || status === "pending";
   }).length;
 
-  // Accepted applications
   const acceptedApplications = applications.filter((application) => {
-    const status = String(application.status || "")
-      .toLowerCase()
-      .trim();
-
+    const status = String(application.status || "").toLowerCase().trim();
     return status === "accepted" || status === "accept";
   }).length;
 
-  // Rejected applications
   const rejectedApplications = applications.filter((application) => {
-    const status = String(application.status || "")
-      .toLowerCase()
-      .trim();
-
+    const status = String(application.status || "").toLowerCase().trim();
     return status === "rejected" || status === "reject";
   }).length;
 
-  // Logout
   const handleLogout = () => {
     localStorage.removeItem("company");
     navigate("/company-login");
   };
 
-  // Loading
+  const handleCompanyDetails = () => {
+    setShowCompanyDetails((previous) => !previous);
+  };
+
   if (!company || loading) {
     return (
       <div className="company-dashboard-loading">
@@ -123,24 +103,16 @@ function CompanyDashboard() {
     );
   }
 
-  // UI
   return (
     <div className="company-dashboard">
-      {/* Header */}
       <div className="dashboard-header">
         <div>
           <h1>Welcome, {company.name}</h1>
-
-          <p>
-            Manage your jobs and applications from here.
-          </p>
+          <p>Manage your jobs and applications from here.</p>
         </div>
 
         <div className="dashboard-header-actions">
-          <Link
-            to="/post-job"
-            className="post-job-btn"
-          >
+          <Link to="/post-job" className="post-job-btn">
             + Post a Job
           </Link>
 
@@ -154,7 +126,6 @@ function CompanyDashboard() {
         </div>
       </div>
 
-      {/* Company Information */}
       <div className="company-info">
         <p>
           <strong>Email:</strong> {company.email}
@@ -165,7 +136,6 @@ function CompanyDashboard() {
         </p>
       </div>
 
-      {/* Dashboard Cards */}
       <div className="dashboard-cards">
         <div className="dashboard-card">
           <h3>Active Jobs</h3>
@@ -192,7 +162,6 @@ function CompanyDashboard() {
         </div>
       </div>
 
-      {/* Dashboard Actions */}
       <div className="dashboard-actions">
         <Link
           to="/post-job"
@@ -218,14 +187,75 @@ function CompanyDashboard() {
           <p>View candidates who applied.</p>
         </Link>
 
-        <Link
-          to="/company-details"
-          className="dashboard-action"
+        <button
+          type="button"
+          className={`dashboard-action company-details-action ${
+            showCompanyDetails ? "company-details-active" : ""
+          }`}
+          onClick={handleCompanyDetails}
         >
-          <h3>Company Details</h3>
-          <p>View and manage your company information.</p>
-        </Link>
+          <h3>
+            Company Details
+            <span className="company-details-arrow">
+              {showCompanyDetails ? "▲" : "▼"}
+            </span>
+          </h3>
+
+          <p>
+            {showCompanyDetails
+              ? "Hide your company information."
+              : "View your company information."}
+          </p>
+        </button>
       </div>
+
+      {showCompanyDetails && (
+        <div className="company-details-panel">
+          <div className="company-details-header">
+            <h2>Company Details</h2>
+
+            <button
+              type="button"
+              className="company-details-close"
+              onClick={handleCompanyDetails}
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="company-details-grid">
+            <div className="company-detail-item">
+              <span>Company Name</span>
+              <strong>{company.name || "Not available"}</strong>
+            </div>
+
+            <div className="company-detail-item">
+              <span>Email</span>
+              <strong>{company.email || "Not available"}</strong>
+            </div>
+
+            <div className="company-detail-item">
+              <span>Location</span>
+              <strong>{company.location || "Not available"}</strong>
+            </div>
+
+            <div className="company-detail-item">
+              <span>Industry</span>
+              <strong>{company.industry || "Not available"}</strong>
+            </div>
+
+            <div className="company-detail-item">
+              <span>Role</span>
+              <strong>{company.role || "Company"}</strong>
+            </div>
+
+            <div className="company-detail-item">
+              <span>Company ID</span>
+              <strong>{company.id || "Not available"}</strong>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
