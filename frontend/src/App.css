@@ -2476,3 +2476,83 @@ h2,
 h3 {
   color: #000000 !important;
 }
+.company-details-action {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.company-details-action h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.company-details-arrow {
+  font-size: 14px;
+}
+
+.company-details-active {
+  width: 100%;
+}
+
+.company-details-panel {
+  width: 100%;
+  margin-top: 20px;
+  padding: 25px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+.company-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.company-details-header h2 {
+  margin: 0;
+}
+
+.company-details-close {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.company-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.company-detail-item {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.company-detail-item span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.company-detail-item strong {
+  display: block;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .company-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
