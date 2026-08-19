@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
+const API_URL = "https://servercarrergo.onrender.com/api";
+
 function AdminDashboard() {
-  // Admin dashboard stats
   const [stats, setStats] = useState({
     users: 0,
     companies: 0,
@@ -13,19 +14,17 @@ function AdminDashboard() {
     rejected_applications: 0
   });
 
-  // Jobs
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [jobsLoading, setJobsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Get admin dashboard data
   const loadDashboard = async () => {
     try {
       setLoading(true);
+      setError("");
 
-      const response = await fetch(
-        "https://servercarrergo.onrender.com/api/admin/dashboard"
-      );
+      const response = await fetch(`${API_URL}/admin/dashboard`);
 
       if (!response.ok) {
         throw new Error("Unable to get dashboard data");
@@ -35,34 +34,34 @@ function AdminDashboard() {
 
       console.log("ADMIN DASHBOARD DATA:", data);
 
+      const dashboardStats = data.stats || {};
+
       setStats({
-        users: Number(data.stats?.users) || 0,
-        companies: Number(data.stats?.companies) || 0,
-        jobs: Number(data.stats?.jobs) || 0,
-        applications: Number(data.stats?.applications) || 0,
-        active_jobs: Number(data.stats?.active_jobs) || 0,
+        users: Number(dashboardStats.users) || 0,
+        companies: Number(dashboardStats.companies) || 0,
+        jobs: Number(dashboardStats.jobs) || 0,
+        applications: Number(dashboardStats.applications) || 0,
+        active_jobs: Number(dashboardStats.active_jobs) || 0,
         pending_applications:
-          Number(data.stats?.pending_applications) || 0,
+          Number(dashboardStats.pending_applications) || 0,
         accepted_applications:
-          Number(data.stats?.accepted_applications) || 0,
+          Number(dashboardStats.accepted_applications) || 0,
         rejected_applications:
-          Number(data.stats?.rejected_applications) || 0
+          Number(dashboardStats.rejected_applications) || 0
       });
     } catch (error) {
       console.error("ADMIN DASHBOARD ERROR:", error);
+      setError("Unable to load dashboard data.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Get all jobs
   const loadJobs = async () => {
     try {
       setJobsLoading(true);
 
-      const response = await fetch(
-        "https://servercarrergo.onrender.com/api/jobs"
-      );
+      const response = await fetch(`${API_URL}/jobs`);
 
       if (!response.ok) {
         throw new Error("Unable to get jobs");
@@ -72,7 +71,13 @@ function AdminDashboard() {
 
       console.log("ADMIN JOBS:", data);
 
-      setJobs(Array.isArray(data.jobs) ? data.jobs : []);
+      if (Array.isArray(data.jobs)) {
+        setJobs(data.jobs);
+      } else if (Array.isArray(data)) {
+        setJobs(data);
+      } else {
+        setJobs([]);
+      }
     } catch (error) {
       console.error("ADMIN JOBS ERROR:", error);
       setJobs([]);
@@ -81,13 +86,11 @@ function AdminDashboard() {
     }
   };
 
-  // Load dashboard and jobs
   useEffect(() => {
     loadDashboard();
     loadJobs();
   }, []);
 
-  // Delete job
   const handleDeleteJob = async (jobId) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this job?"
@@ -98,12 +101,9 @@ function AdminDashboard() {
     }
 
     try {
-      const response = await fetch(
-        `https://servercarrergo.onrender.com/api/jobs/${jobId}`,
-        {
-          method: "DELETE"
-        }
-      );
+      const response = await fetch(`${API_URL}/jobs/${jobId}`, {
+        method: "DELETE"
+      });
 
       const data = await response.json();
 
@@ -116,47 +116,46 @@ function AdminDashboard() {
         previousJobs.filter((job) => job.id !== jobId)
       );
 
-      setStats((previousStats) => ({
-        ...previousStats,
-        jobs: Math.max(Number(previousStats.jobs) - 1, 0),
-        active_jobs: Math.max(
-          Number(previousStats.active_jobs) - 1,
-          0
-        )
-      }));
-
       alert("Job deleted successfully");
 
-      loadDashboard();
+      await loadDashboard();
     } catch (error) {
       console.error("DELETE JOB ERROR:", error);
-
-      alert("Unable to connect to CareerGo backend");
+      alert("Unable to connect to CareerGo backend.");
     }
   };
 
-  // Loading screen
+  const handleEditJob = (job) => {
+    alert(`Edit Job: ${job.title}`);
+  };
+
+  const handlePostJob = () => {
+    alert("Post Job section will be added next.");
+  };
+
   if (loading) {
     return (
       <div className="admin-dashboard">
-        <div className="admin-header">
-          <h1>Admin Dashboard</h1>
-          <p>Loading dashboard...</p>
+        <div className="admin-loading">
+          Loading Admin Dashboard...
         </div>
       </div>
     );
   }
 
-  // Admin dashboard
   return (
     <div className="admin-dashboard">
-      {/* Header */}
       <div className="admin-header">
         <h1>Admin Dashboard</h1>
         <p>Welcome to CareerGo Admin Panel</p>
       </div>
 
-      {/* Stat Cards */}
+      {error && (
+        <div className="admin-error">
+          {error}
+        </div>
+      )}
+
       <div className="admin-stats">
         <div className="admin-stat-card">
           <h3>Total Users</h3>
@@ -199,22 +198,21 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* Job Management */}
       <div className="admin-job-management">
         <div className="admin-job-header">
-          <h2>Job Management</h2>
+          <div>
+            <h2>Job Management</h2>
+            <p>Manage all jobs posted on CareerGo</p>
+          </div>
 
           <button
             className="admin-post-job-btn"
-            onClick={() => {
-              alert("Post Job section will be added next.");
-            }}
+            onClick={handlePostJob}
           >
             + Post New Job
           </button>
         </div>
 
-        {/* Job Loading */}
         {jobsLoading ? (
           <div className="admin-no-jobs">
             Loading jobs...
@@ -230,47 +228,48 @@ function AdminDashboard() {
                 className="admin-job-card"
                 key={job.id}
               >
-                {/* Job Information */}
                 <div className="admin-job-info">
-                  <h3>{job.title}</h3>
+                  <h3>
+                    {job.title || "Untitled Job"}
+                  </h3>
 
                   <p className="admin-job-company">
-                    {job.company_name || "Company"}
+                    {job.company_name ||
+                      job.company ||
+                      "Company"}
                   </p>
 
                   <p className="admin-job-details">
-                    Location: {job.location}
+                    Location: {job.location || "Not specified"}
                   </p>
 
                   <p className="admin-job-details">
-                    Salary: {job.salary}
+                    Salary: {job.salary || "Not specified"}
                   </p>
 
                   <p className="admin-job-details">
-                    Type: {job.type}
+                    Type:{" "}
+                    {job.job_type ||
+                      job.type ||
+                      "Not specified"}
                   </p>
 
                   <p className="admin-job-details">
-                    Skills: {job.skills}
+                    Skills: {job.skills || "Not specified"}
                   </p>
                 </div>
 
-                {/* Job Actions */}
                 <div className="admin-job-actions">
                   <button
                     className="admin-edit-btn"
-                    onClick={() => {
-                      alert(`Edit Job: ${job.title}`);
-                    }}
+                    onClick={() => handleEditJob(job)}
                   >
                     Edit
                   </button>
 
                   <button
                     className="admin-delete-btn"
-                    onClick={() => {
-                      handleDeleteJob(job.id);
-                    }}
+                    onClick={() => handleDeleteJob(job.id)}
                   >
                     Delete
                   </button>
