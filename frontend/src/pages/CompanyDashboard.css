@@ -10,24 +10,32 @@
   color: #111111;
 }
 
+/* =========================
+   SIDEBAR
+========================= */
+
 .company-sidebar {
   position: fixed;
   top: 0;
   left: 0;
   width: 250px;
   height: 100vh;
-  padding: 24px 16px 18px;
+  padding: 24px 15px 18px;
   display: flex;
   flex-direction: column;
   background: #111111;
   color: #ffffff;
-  z-index: 9999;
+  z-index: 1000;
 }
+
+/* =========================
+   LOGO
+========================= */
 
 .company-logo-area {
   width: 100%;
   min-height: 65px;
-  padding: 0 8px 22px;
+  padding: 8px 10px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -54,6 +62,10 @@
   font-weight: 700;
 }
 
+/* =========================
+   SIDEBAR NAVIGATION
+========================= */
+
 .company-sidebar-nav {
   width: 100%;
   margin-top: 25px;
@@ -70,16 +82,17 @@
   align-items: center;
   gap: 12px;
   border-radius: 8px;
-  color: #ffffff !important;
   background: transparent;
+  color: #ffffff !important;
   text-decoration: none !important;
   font-size: 13px;
   font-weight: 600;
+  line-height: 1;
   transition: all 0.2s ease;
 }
 
 .company-nav-item:hover {
-  background: #222222;
+  background: #202020;
   color: #ffffff !important;
 }
 
@@ -94,8 +107,8 @@
 }
 
 .nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -105,16 +118,20 @@
   font-weight: 700;
 }
 
+/* =========================
+   SIDEBAR BOTTOM
+========================= */
+
 .company-sidebar-bottom {
   width: 100%;
   margin-top: auto;
-  padding-top: 18px;
+  padding-top: 20px;
   border-top: 1px solid #2d2d2d;
 }
 
 .company-sidebar-profile {
   width: 100%;
-  padding: 5px 5px 15px;
+  padding: 4px 6px 16px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -143,6 +160,7 @@
 
 .company-sidebar-info strong {
   display: block;
+  max-width: 150px;
   overflow: hidden;
   color: #ffffff;
   font-size: 12px;
@@ -153,8 +171,9 @@
 
 .company-sidebar-info span {
   display: block;
+  max-width: 150px;
   overflow: hidden;
-  color: #aaaaaa;
+  color: #999999;
   font-size: 10px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -163,8 +182,8 @@
 .company-sidebar-logout {
   width: 100%;
   height: 40px;
-  border: 1px solid #3d3d3d;
-  border-radius: 7px;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
   outline: none;
   background: transparent;
   color: #ffffff;
@@ -176,8 +195,13 @@
 
 .company-sidebar-logout:hover {
   background: #ffffff;
+  border-color: #ffffff;
   color: #111111;
 }
+
+/* =========================
+   MAIN CONTENT
+========================= */
 
 .company-main-content {
   width: calc(100% - 250px);
@@ -193,6 +217,10 @@
   margin: 0 auto;
 }
 
+/* =========================
+   HEADER
+========================= */
+
 .company-dashboard-header {
   width: 100%;
   margin-bottom: 30px;
@@ -204,7 +232,7 @@
 
 .company-page-label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 9px;
   color: #777777;
   font-size: 10px;
   font-weight: 700;
@@ -214,34 +242,39 @@
 .company-header-text h1 {
   margin: 0;
   color: #111111;
-  font-size: 34px;
-  line-height: 1.2;
+  font-size: 36px;
+  line-height: 1.15;
   font-weight: 700;
   letter-spacing: -1px;
 }
 
 .company-header-text p {
-  margin: 9px 0 0;
-  color: #777777;
-  font-size: 13px;
+  margin: 10px 0 0;
+  color: #6b7280;
+  font-size: 14px;
 }
+
+/* =========================
+   COMPANY SUMMARY
+========================= */
 
 .company-summary-card {
   width: 100%;
-  min-height: 105px;
+  min-height: 100px;
   margin-bottom: 40px;
-  padding: 22px 24px;
+  padding: 20px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 25px;
-  border: 1px solid #e3e3e3;
+  border: 1px solid #e4e4e4;
   border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
 }
 
 .company-summary-left {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -261,6 +294,10 @@
   font-weight: 700;
 }
 
+.company-summary-details {
+  min-width: 0;
+}
+
 .company-summary-details h2 {
   margin: 0 0 5px;
   color: #111111;
@@ -277,11 +314,11 @@
 .company-summary-right {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 24px;
 }
 
 .company-role {
-  padding-right: 22px;
+  padding-right: 24px;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -299,17 +336,17 @@
 }
 
 .view-company-button {
-  height: 40px;
-  padding: 0 16px;
+  height: 42px;
+  padding: 0 17px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #dddddd;
-  border-radius: 7px;
+  border-radius: 8px;
   background: #ffffff;
   color: #111111 !important;
   text-decoration: none !important;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -320,6 +357,10 @@
   background: #111111;
   color: #ffffff !important;
 }
+
+/* =========================
+   OVERVIEW
+========================= */
 
 .company-overview {
   width: 100%;
@@ -333,21 +374,27 @@
 .section-heading h2 {
   margin: 0;
   color: #111111;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
+  text-align: center;
 }
 
 .section-heading p {
-  margin: 5px 0 0;
+  margin: 6px 0 0;
   color: #888888;
-  font-size: 11px;
+  font-size: 12px;
+  text-align: center;
 }
+
+/* =========================
+   OVERVIEW GRID
+========================= */
 
 .overview-grid {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 15px;
 }
 
 .overview-card {
@@ -355,7 +402,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e3e3e3;
+  border: 1px solid #e4e4e4;
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.025);
@@ -369,15 +416,15 @@
 }
 
 .overview-icon {
-  width: 31px;
-  height: 31px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 7px;
+  border-radius: 8px;
   background: #111111;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -391,26 +438,33 @@
 }
 
 .overview-number {
-  margin-top: 25px;
+  margin-top: 28px;
   color: #111111;
-  font-size: 31px;
+  font-size: 30px;
   line-height: 1;
   font-weight: 700;
+  text-align: center;
 }
 
 .overview-card h3 {
-  margin: 9px 0 0;
+  margin: 10px 0 0;
   color: #111111;
   font-size: 13px;
   font-weight: 700;
+  text-align: center;
 }
 
 .overview-card p {
   margin: 8px 0 0;
   color: #888888;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.5;
+  text-align: center;
 }
+
+/* =========================
+   LOADING
+========================= */
 
 .company-dashboard-loading {
   width: 100%;
@@ -427,7 +481,7 @@
   width: 30px;
   height: 30px;
   margin-bottom: 12px;
-  border: 3px solid #dddddd;
+  border: 3px solid #e5e5e5;
   border-top-color: #111111;
   border-radius: 50%;
   animation: companySpin 0.7s linear infinite;
@@ -439,13 +493,151 @@
   }
 }
 
+/* =========================
+   COMPANY PROFILE
+========================= */
+
+.company-profile-page {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+}
+
+.company-profile-header {
+  width: 100%;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.company-profile-header h1 {
+  margin: 0;
+  color: #111111;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.company-profile-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.back-dashboard-button {
+  margin-top: 10px;
+  color: #111111 !important;
+  text-decoration: none !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.back-dashboard-button:hover {
+  text-decoration: underline !important;
+}
+
+.company-profile-card {
+  width: 100%;
+  padding: 30px;
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+}
+
+.profile-avatar {
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profile-main {
+  width: 100%;
+}
+
+.profile-main h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profile-email {
+  margin: 7px 0 22px;
+  color: #777777;
+  font-size: 13px;
+}
+
+.profile-information {
+  width: 100%;
+  border-top: 1px solid #eeeeee;
+}
+
+.profile-info-row {
+  min-height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.profile-info-row span {
+  color: #777777;
+  font-size: 12px;
+}
+
+.profile-info-row strong {
+  color: #111111;
+  font-size: 12px;
+  text-align: right;
+}
+
+.account-information {
+  width: 100%;
+  margin-top: 25px;
+  padding: 25px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.account-information h2 {
+  margin: 0 0 8px;
+  color: #111111;
+  font-size: 18px;
+}
+
+.account-information p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
 @media (max-width: 1100px) {
   .company-main-content {
-    padding: 40px 30px;
+    padding: 40px 35px;
   }
 
   .overview-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -488,8 +680,16 @@
     padding: 25px 16px;
   }
 
+  .company-sidebar-nav {
+    margin-bottom: 20px;
+  }
+
+  .company-sidebar-bottom {
+    margin-top: 20px;
+  }
+
   .company-header-text h1 {
-    font-size: 27px;
+    font-size: 28px;
   }
 
   .overview-grid {
@@ -497,17 +697,26 @@
   }
 
   .company-summary-right {
-    width: 100%;
     flex-direction: column;
     align-items: flex-start;
+    gap: 15px;
   }
 
   .company-role {
-    border-right: none;
     padding-right: 0;
+    border-right: none;
   }
 
   .view-company-button {
     width: 100%;
+  }
+
+  .company-profile-header {
+    flex-direction: column;
+  }
+
+  .company-profile-card {
+    flex-direction: column;
+    padding: 25px;
   }
 }
