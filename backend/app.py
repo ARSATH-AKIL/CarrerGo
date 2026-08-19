@@ -907,7 +907,6 @@ def admin_login():
 # =========================================================
 # ADMIN DASHBOARD
 # =========================================================
-
 @app.route(
     "/api/admin/dashboard",
     methods=["GET"]
@@ -1065,28 +1064,72 @@ def admin_dashboard():
 
         if db:
             db.close()
-        
-@app.route(
-    "/api/admin/dashboard",
-    methods=["GET"]
-)
-def admin_dashboard():
-
-    # YOUR EXISTING CODE
-    # DON'T CHANGE
-    # DON'T DELETE
 
 
-# ADD NEW API HERE
 @app.route(
     "/api/admin/companies",
     methods=["GET"]
 )
 def get_admin_companies():
 
-    # NEW CODE
+    db = None
+    cursor = None
 
+    try:
 
+        db = get_db_connection()
+
+        if not db:
+
+            return jsonify({
+                "message":
+                "Database connection failed"
+            }), 500
+
+        cursor = db.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email
+            FROM users
+            WHERE role = 'company'
+            ORDER BY id DESC
+            """
+        )
+
+        companies = cursor.fetchall()
+
+        return jsonify({
+            "companies":
+            companies
+        }), 200
+
+    except Exception as e:
+
+        print(
+            "ADMIN COMPANIES ERROR:",
+            e
+        )
+
+        return jsonify({
+            "message":
+            "Unable to get companies",
+            "error":
+            str(e)
+        }), 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
 # =========================================================
 # CREATE JOB
 # =========================================================
