@@ -2759,3 +2759,34 @@ h3 {
 }
 
 /* ...remaining company CSS... */
+.admin-error {
+  width: 100%;
+  margin-bottom: 25px;
+  padding: 14px 18px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-job-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-job-header p {
+  margin: 0;
+  color: #777777;
+  font-size: 14px;
+}
+
+.admin-job-info {
+  min-width: 0;
+}
+
+.admin-job-details {
+  overflow-wrap: anywhere;
+}
