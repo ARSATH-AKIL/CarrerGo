@@ -25,9 +25,7 @@ body {
   color: #111111;
 }
 
-/* =========================
-   SIDEBAR
-========================= */
+/* SIDEBAR */
 
 .company-sidebar {
   position: fixed;
@@ -45,14 +43,12 @@ body {
   overflow-x: hidden;
 }
 
-/* =========================
-   LOGO
-========================= */
+/* LOGO */
 
 .company-logo-area {
   width: 100%;
   min-height: 65px;
-  padding: 8px 10px 20px;
+  padding: 8px 10px 18px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -80,16 +76,14 @@ body {
   white-space: nowrap;
 }
 
-/* =========================
-   SIDEBAR NAVIGATION
-========================= */
+/* SIDEBAR NAVIGATION */
 
 .company-sidebar-nav {
   width: 100%;
-  margin-top: 25px;
+  margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 5px;
 }
 
 .company-nav-item {
@@ -136,20 +130,18 @@ body {
   font-weight: 700;
 }
 
-/* =========================
-   SIDEBAR BOTTOM
-========================= */
+/* SIDEBAR BOTTOM */
 
 .company-sidebar-bottom {
   width: 100%;
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid #2d2d2d;
 }
 
 .company-sidebar-profile {
   width: 100%;
-  padding: 4px 6px 16px;
+  padding: 4px 6px 12px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -173,7 +165,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .company-sidebar-info strong {
@@ -217,15 +209,13 @@ body {
   color: #111111;
 }
 
-/* =========================
-   MAIN CONTENT
-========================= */
+/* MAIN CONTENT */
 
 .company-main-content {
   width: calc(100% - 250px);
   min-height: 100vh;
   margin-left: 250px;
-  padding: 55px 60px;
+  padding: 38px 55px;
   background: #f5f7fb;
 }
 
@@ -235,13 +225,11 @@ body {
   margin: 0 auto;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .company-dashboard-header {
   width: 100%;
-  margin-bottom: 30px;
+  margin-bottom: 16px;
 }
 
 .company-header-text {
@@ -251,7 +239,7 @@ body {
 
 .company-page-label {
   display: block;
-  margin-bottom: 9px;
+  margin-bottom: 7px;
   color: #777777;
   font-size: 10px;
   font-weight: 700;
@@ -262,31 +250,29 @@ body {
   margin: 0;
   color: #111111;
   font-size: 36px;
-  line-height: 1.15;
+  line-height: 1.1;
   font-weight: 700;
   letter-spacing: -1px;
 }
 
 .company-header-text p {
-  margin: 10px 0 0;
+  margin: 7px 0 0;
   color: #6b7280;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
-/* =========================
-   COMPANY SUMMARY
-========================= */
+/* COMPANY SUMMARY */
 
 .company-summary-card {
   width: 100%;
-  min-height: 100px;
-  margin-bottom: 40px;
-  padding: 20px 22px;
+  min-height: 96px;
+  margin-bottom: 20px;
+  padding: 18px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 25px;
+  gap: 20px;
   border: 1px solid #e4e4e4;
   border-radius: 14px;
   background: #ffffff;
@@ -319,7 +305,7 @@ body {
 }
 
 .company-summary-details h2 {
-  margin: 0 0 5px;
+  margin: 0 0 4px;
   color: #111111;
   font-size: 17px;
   font-weight: 700;
@@ -334,14 +320,14 @@ body {
 .company-summary-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .company-role {
-  padding-right: 24px;
+  padding-right: 20px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   border-right: 1px solid #dddddd;
 }
 
@@ -378,9 +364,7 @@ body {
   color: #ffffff !important;
 }
 
-/* =========================
-   OVERVIEW
-========================= */
+/* OVERVIEW */
 
 .company-overview {
   width: 100%;
@@ -388,7 +372,7 @@ body {
 
 .section-heading {
   width: 100%;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -401,27 +385,25 @@ body {
 }
 
 .section-heading p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #888888;
   font-size: 12px;
   text-align: center;
 }
 
-/* =========================
-   OVERVIEW GRID
-========================= */
+/* OVERVIEW GRID */
 
 .overview-grid {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 15px;
+  gap: 12px;
 }
 
 .overview-card {
   min-width: 0;
-  min-height: 190px;
-  padding: 20px;
+  min-height: 175px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   border: 1px solid #e4e4e4;
@@ -462,7 +444,7 @@ body {
 }
 
 .overview-number {
-  margin-top: 28px;
+  margin-top: 22px;
   color: #111111;
   font-size: 30px;
   line-height: 1;
@@ -471,7 +453,7 @@ body {
 }
 
 .overview-card h3 {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: #111111;
   font-size: 13px;
   font-weight: 700;
@@ -479,16 +461,14 @@ body {
 }
 
 .overview-card p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: #888888;
   font-size: 11px;
-  line-height: 1.5;
+  line-height: 1.4;
   text-align: center;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* LOADING */
 
 .company-dashboard-loading {
   width: 100%;
@@ -517,9 +497,7 @@ body {
   }
 }
 
-/* =========================
-   COMPANY PROFILE
-========================= */
+/* COMPANY PROFILE */
 
 .company-profile-page {
   width: 100%;
@@ -529,11 +507,11 @@ body {
 
 .company-profile-header {
   width: 100%;
-  margin-bottom: 30px;
+  margin-bottom: 22px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 25px;
+  gap: 20px;
 }
 
 .company-profile-header h1 {
@@ -544,13 +522,13 @@ body {
 }
 
 .company-profile-header p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: #6b7280;
   font-size: 14px;
 }
 
 .back-dashboard-button {
-  margin-top: 10px;
+  margin-top: 8px;
   color: #111111 !important;
   text-decoration: none !important;
   font-size: 13px;
@@ -563,10 +541,10 @@ body {
 
 .company-profile-card {
   width: 100%;
-  padding: 30px;
+  padding: 26px;
   display: flex;
   align-items: flex-start;
-  gap: 25px;
+  gap: 22px;
   border: 1px solid #e5e7eb;
   border-radius: 15px;
   background: #ffffff;
@@ -600,7 +578,7 @@ body {
 }
 
 .profile-email {
-  margin: 7px 0 22px;
+  margin: 6px 0 18px;
   color: #777777;
   font-size: 13px;
 }
@@ -611,7 +589,7 @@ body {
 }
 
 .profile-info-row {
-  min-height: 55px;
+  min-height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -632,15 +610,15 @@ body {
 
 .account-information {
   width: 100%;
-  margin-top: 25px;
-  padding: 25px;
+  margin-top: 20px;
+  padding: 22px;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   background: #ffffff;
 }
 
 .account-information h2 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: #111111;
   font-size: 18px;
 }
@@ -649,16 +627,14 @@ body {
   margin: 0;
   color: #6b7280;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* =========================
-   LARGE SCREEN
-========================= */
+/* LARGE SCREEN */
 
 @media (max-width: 1200px) {
   .company-main-content {
-    padding: 45px 40px;
+    padding: 35px 40px;
   }
 
   .company-dashboard-page {
@@ -667,23 +643,21 @@ body {
 
   .overview-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
   }
 
   .overview-card {
-    padding: 18px;
+    padding: 17px;
   }
 }
 
-/* =========================
-   TABLET
-========================= */
+/* TABLET */
 
 @media (max-width: 1100px) {
   .company-main-content {
     width: calc(100% - 250px);
     margin-left: 250px;
-    padding: 40px 30px;
+    padding: 32px 30px;
   }
 
   .company-header-text h1 {
@@ -692,20 +666,19 @@ body {
 
   .overview-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .company-summary-card {
-    gap: 18px;
+    gap: 16px;
   }
 
   .company-summary-right {
-    gap: 16px;
+    gap: 14px;
   }
 }
 
-/* =========================
-   SMALL TABLET
-========================= */
+/* SMALL TABLET */
 
 @media (max-width: 800px) {
   .company-sidebar {
@@ -715,7 +688,7 @@ body {
   .company-main-content {
     width: calc(100% - 210px);
     margin-left: 210px;
-    padding: 30px 20px;
+    padding: 28px 20px;
   }
 
   .company-header-text h1 {
@@ -726,6 +699,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    margin-bottom: 18px;
   }
 
   .company-summary-left {
@@ -742,13 +716,11 @@ body {
   }
 
   .overview-card {
-    min-height: 175px;
+    min-height: 165px;
   }
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* MOBILE */
 
 @media (max-width: 600px) {
   .company-layout {
@@ -767,23 +739,23 @@ body {
   }
 
   .company-logo-area {
-    padding: 5px 8px 18px;
+    padding: 5px 8px 15px;
   }
 
   .company-sidebar-nav {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 16px;
+    margin-bottom: 16px;
   }
 
   .company-sidebar-bottom {
-    margin-top: 20px;
+    margin-top: 16px;
   }
 
   .company-main-content {
     width: 100%;
     margin-left: 0;
     min-height: auto;
-    padding: 25px 16px;
+    padding: 22px 16px;
   }
 
   .company-dashboard-page {
@@ -792,7 +764,7 @@ body {
   }
 
   .company-dashboard-header {
-    margin-bottom: 25px;
+    margin-bottom: 14px;
   }
 
   .company-header-text {
@@ -802,20 +774,22 @@ body {
   .company-page-label {
     font-size: 9px;
     letter-spacing: 1.5px;
+    margin-bottom: 6px;
   }
 
   .company-header-text h1 {
     font-size: 27px;
-    line-height: 1.2;
+    line-height: 1.15;
   }
 
   .company-header-text p {
+    margin-top: 6px;
     font-size: 13px;
   }
 
   .company-summary-card {
-    margin-bottom: 30px;
-    padding: 18px;
+    margin-bottom: 22px;
+    padding: 17px;
   }
 
   .company-summary-left {
@@ -825,7 +799,7 @@ body {
   .company-summary-right {
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
+    gap: 12px;
   }
 
   .company-role {
@@ -838,7 +812,7 @@ body {
   }
 
   .section-heading {
-    margin-bottom: 16px;
+    margin-bottom: 9px;
   }
 
   .section-heading h2 {
@@ -846,21 +820,22 @@ body {
   }
 
   .section-heading p {
+    margin-top: 3px;
     font-size: 11px;
   }
 
   .overview-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .overview-card {
-    min-height: 165px;
-    padding: 18px;
+    min-height: 155px;
+    padding: 17px;
   }
 
   .overview-number {
-    margin-top: 24px;
+    margin-top: 20px;
     font-size: 28px;
   }
 
@@ -871,7 +846,8 @@ body {
 
   .company-profile-header {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
+    margin-bottom: 18px;
   }
 
   .company-profile-header h1 {
@@ -880,8 +856,8 @@ body {
 
   .company-profile-card {
     flex-direction: column;
-    padding: 22px;
-    gap: 18px;
+    padding: 20px;
+    gap: 16px;
   }
 
   .profile-main h2 {
@@ -889,7 +865,7 @@ body {
   }
 
   .profile-info-row {
-    min-height: 50px;
+    min-height: 48px;
     gap: 12px;
   }
 
@@ -899,13 +875,12 @@ body {
   }
 
   .account-information {
-    padding: 20px;
+    margin-top: 17px;
+    padding: 18px;
   }
 }
 
-/* =========================
-   VERY SMALL MOBILE
-========================= */
+/* VERY SMALL MOBILE */
 
 @media (max-width: 400px) {
   .company-sidebar {
@@ -917,7 +892,7 @@ body {
   }
 
   .company-main-content {
-    padding: 20px 12px;
+    padding: 19px 12px;
   }
 
   .company-header-text h1 {
@@ -936,10 +911,6 @@ body {
   }
 
   .overview-card {
-    padding: 16px;
-  }
-
-  .company-profile-card {
-    padding: 18px;
+    padding: 15px;
   }
 }
