@@ -135,7 +135,7 @@ function CompanyDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("company");
-    navigate("/company-login");
+    navigate("/");
   };
 
   if (loading) {
