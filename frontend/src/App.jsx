@@ -50,10 +50,12 @@ function CompanySidebar() {
     company = null;
   }
 
-  const isActive = (path) => {
-    return location.pathname === path
-      ? "company-sidebar-link active"
-      : "company-sidebar-link";
+  const getActiveClass = (path) => {
+    if (location.pathname === path) {
+      return "company-sidebar-link active";
+    }
+
+    return "company-sidebar-link";
   };
 
   const handleLogout = () => {
@@ -64,118 +66,82 @@ function CompanySidebar() {
   return (
     <aside className="company-sidebar">
 
-      {/* LOGO */}
-
-      <div className="company-sidebar-logo">
+      <div className="company-logo-box">
         <Link to="/company-dashboard">
-          <img
-            src="/logo.png"
-            alt="CareerGo"
-          />
+          <div className="careergo-logo">
+            <span>C</span>
+            <span>G</span>
+          </div>
         </Link>
       </div>
 
-      <div className="company-sidebar-line"></div>
-
-      {/* MENU */}
+      <div className="sidebar-divider"></div>
 
       <nav className="company-sidebar-menu">
 
         <Link
           to="/company-dashboard"
-          className={isActive("/company-dashboard")}
+          className={getActiveClass("/company-dashboard")}
         >
-          <span className="company-menu-icon">
-            ⌂
-          </span>
-
-          <span>
-            Dashboard
-          </span>
+          <span className="sidebar-icon">⌂</span>
+          <span>Dashboard</span>
         </Link>
 
         <Link
           to="/post-job"
-          className={isActive("/post-job")}
+          className={getActiveClass("/post-job")}
         >
-          <span className="company-menu-icon">
-            +
-          </span>
-
-          <span>
-            Post a Job
-          </span>
+          <span className="sidebar-icon">+</span>
+          <span>Post a Job</span>
         </Link>
 
         <Link
           to="/my-jobs"
-          className={
-            location.pathname === "/my-jobs" ||
-            location.pathname.startsWith("/edit-job/")
-              ? "company-sidebar-link active"
-              : "company-sidebar-link"
-          }
+          className={getActiveClass("/my-jobs")}
         >
-          <span className="company-menu-icon">
-            ▣
-          </span>
-
-          <span>
-            My Jobs
-          </span>
+          <span className="sidebar-icon">▣</span>
+          <span>My Jobs</span>
         </Link>
 
         <Link
           to="/applications"
-          className={isActive("/applications")}
+          className={getActiveClass("/applications")}
         >
-          <span className="company-menu-icon">
-            ◉
-          </span>
-
-          <span>
-            Applications
-          </span>
+          <span className="sidebar-icon">◉</span>
+          <span>Applications</span>
         </Link>
 
         <Link
           to="/company-profile"
-          className={isActive("/company-profile")}
+          className={getActiveClass("/company-profile")}
         >
-          <span className="company-menu-icon">
-            ●
-          </span>
-
-          <span>
-            Company Details
-          </span>
+          <span className="sidebar-icon">●</span>
+          <span>Company Details</span>
         </Link>
 
       </nav>
 
-      {/* BOTTOM COMPANY INFO */}
-
       <div className="company-sidebar-bottom">
 
-        <div className="company-sidebar-line"></div>
+        <div className="sidebar-divider"></div>
 
-        <div className="company-sidebar-company">
+        <div className="sidebar-company-info">
 
-          <div className="company-sidebar-avatar">
+          <div className="sidebar-company-avatar">
             {company?.name
               ? company.name.charAt(0).toUpperCase()
               : "C"}
           </div>
 
-          <div className="company-sidebar-company-info">
+          <div className="sidebar-company-text">
 
             <strong>
               {company?.name || "Company"}
             </strong>
 
-            <span>
+            <small>
               {company?.email || "company@email.com"}
-            </span>
+            </small>
 
           </div>
 
@@ -183,7 +149,7 @@ function CompanySidebar() {
 
         <button
           type="button"
-          className="company-sidebar-logout"
+          className="sidebar-logout"
           onClick={handleLogout}
         >
           Logout
@@ -198,11 +164,7 @@ function CompanySidebar() {
 function AppContent() {
   const location = useLocation();
 
-  /*
-    Company pages where sidebar should remain visible
-  */
-
-  const companyPages = [
+  const companyRoutes = [
     "/company-dashboard",
     "/post-job",
     "/my-jobs",
@@ -211,46 +173,29 @@ function AppContent() {
   ];
 
   const isCompanyPage =
-    companyPages.some((page) =>
-      location.pathname === page ||
-      location.pathname.startsWith(page + "/")
-    ) ||
+    companyRoutes.includes(location.pathname) ||
     location.pathname.startsWith("/edit-job/");
 
   return (
     <>
 
-      {/* NORMAL NAVBAR */}
-
       {!isCompanyPage && <Navbar />}
 
-      {/* COMPANY SIDEBAR */}
-
       {isCompanyPage && <CompanySidebar />}
-
-      {/* PAGE CONTENT */}
 
       <main
         className={
           isCompanyPage
-            ? "company-page-content"
-            : "normal-page-content"
+            ? "company-main-content"
+            : "normal-main-content"
         }
       >
 
         <Routes>
 
-          {/* NORMAL WEBSITE */}
+          <Route path="/" element={<Home />} />
 
-          <Route
-            path="/"
-            element={<Home />}
-          />
-
-          <Route
-            path="/jobs"
-            element={<Jobs />}
-          />
+          <Route path="/jobs" element={<Jobs />} />
 
           <Route
             path="/companies"
@@ -282,8 +227,6 @@ function AppContent() {
             element={<JobDetails />}
           />
 
-          {/* COMPANY AUTH */}
-
           <Route
             path="/company-register"
             element={<CompanyRegister />}
@@ -293,8 +236,6 @@ function AppContent() {
             path="/company-login"
             element={<CompanyLogin />}
           />
-
-          {/* COMPANY PAGES */}
 
           <Route
             path="/company-dashboard"
@@ -326,8 +267,6 @@ function AppContent() {
             element={<CompanyProfile />}
           />
 
-          {/* USER */}
-
           <Route
             path="/profile"
             element={<Profile />}
@@ -342,8 +281,6 @@ function AppContent() {
             path="/saved-jobs"
             element={<SavedJobs />}
           />
-
-          {/* ADMIN */}
 
           <Route
             path="/admin-login"
