@@ -206,7 +206,7 @@
 .company-main-content {
   width: calc(100% - 250px);
   min-height: 100vh;
-  margin-left: 250px;
+  margin-left: 150px;
   padding: 55px 60px;
   background: #f5f7fb;
 }
@@ -648,7 +648,7 @@
 
   .company-main-content {
     width: calc(100% - 210px);
-    margin-left: 250px;
+    margin-left: 150px;
     padding: 30px 20px;
   }
 
@@ -676,7 +676,7 @@
 
   .company-main-content {
     width: 100%;
-    margin-left: 250px;
+    margin-left: 150px;
     padding: 25px 16px;
   }
 
