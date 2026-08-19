@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "../CompanyLayout.css";
+import "./CompanyLayout.css";
 
 function CompanyLayout() {
   const navigate = useNavigate();
