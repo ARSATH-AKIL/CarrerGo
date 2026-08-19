@@ -1065,6 +1065,26 @@ def admin_dashboard():
 
         if db:
             db.close()
+        
+@app.route(
+    "/api/admin/dashboard",
+    methods=["GET"]
+)
+def admin_dashboard():
+
+    # YOUR EXISTING CODE
+    # DON'T CHANGE
+    # DON'T DELETE
+
+
+# ADD NEW API HERE
+@app.route(
+    "/api/admin/companies",
+    methods=["GET"]
+)
+def get_admin_companies():
+
+    # NEW CODE
 
 
 # =========================================================
