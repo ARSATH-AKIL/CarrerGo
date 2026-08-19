@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 
 function CompanyDashboard() {
   const navigate = useNavigate();
+
   const [company, setCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCompanyDetails, setShowCompanyDetails] = useState(false);
 
   useEffect(() => {
     const storedCompany = localStorage.getItem("company");
@@ -19,6 +19,7 @@ function CompanyDashboard() {
 
     try {
       const companyData = JSON.parse(storedCompany);
+
       setCompany(companyData);
 
       fetch(
@@ -28,6 +29,7 @@ function CompanyDashboard() {
           if (!response.ok) {
             throw new Error("Unable to get company jobs");
           }
+
           return response.json();
         })
         .then((data) => {
@@ -46,6 +48,7 @@ function CompanyDashboard() {
           if (!response.ok) {
             throw new Error("Unable to get company applications");
           }
+
           return response.json();
         })
         .then((data) => {
@@ -61,28 +64,41 @@ function CompanyDashboard() {
         });
     } catch (error) {
       console.error("COMPANY DATA ERROR:", error);
+
       localStorage.removeItem("company");
       navigate("/company-login");
     }
   }, [navigate]);
 
   const activeJobs = jobs.filter((job) => {
-    const status = String(job.status || "").toLowerCase().trim();
+    const status = String(job.status || "")
+      .toLowerCase()
+      .trim();
+
     return status !== "closed";
   }).length;
 
   const pendingApplications = applications.filter((application) => {
-    const status = String(application.status || "").toLowerCase().trim();
+    const status = String(application.status || "")
+      .toLowerCase()
+      .trim();
+
     return status === "applied" || status === "pending";
   }).length;
 
   const acceptedApplications = applications.filter((application) => {
-    const status = String(application.status || "").toLowerCase().trim();
+    const status = String(application.status || "")
+      .toLowerCase()
+      .trim();
+
     return status === "accepted" || status === "accept";
   }).length;
 
   const rejectedApplications = applications.filter((application) => {
-    const status = String(application.status || "").toLowerCase().trim();
+    const status = String(application.status || "")
+      .toLowerCase()
+      .trim();
+
     return status === "rejected" || status === "reject";
   }).length;
 
@@ -91,13 +107,10 @@ function CompanyDashboard() {
     navigate("/company-login");
   };
 
-  const handleCompanyDetails = () => {
-    setShowCompanyDetails((previous) => !previous);
-  };
-
   if (!company || loading) {
     return (
       <div className="company-dashboard-loading">
+        <div className="loading-spinner"></div>
         <p>Loading company dashboard...</p>
       </div>
     );
@@ -105,156 +118,632 @@ function CompanyDashboard() {
 
   return (
     <div className="company-dashboard">
-      <div className="dashboard-header">
-        <div>
-          <h1>Welcome, {company.name}</h1>
-          <p>Manage your jobs and applications from here.</p>
+
+      {/* SIDEBAR */}
+
+      <aside className="company-sidebar">
+
+        <div className="sidebar-logo">
+          <div className="logo-box">C</div>
+
+          <div>
+            <h2>CareerGo</h2>
+            <span>Company Portal</span>
+          </div>
         </div>
 
-        <div className="dashboard-header-actions">
-          <Link to="/post-job" className="post-job-btn">
-            + Post a Job
+        <nav className="sidebar-nav">
+
+          <Link
+            to="/company-dashboard"
+            className="sidebar-link active"
+          >
+            <span className="sidebar-icon">⌂</span>
+            Dashboard
           </Link>
+
+          <Link
+            to="/post-job"
+            className="sidebar-link"
+          >
+            <span className="sidebar-icon">+</span>
+            Post a Job
+          </Link>
+
+          <Link
+            to="/my-jobs"
+            className="sidebar-link"
+          >
+            <span className="sidebar-icon">▣</span>
+            My Jobs
+          </Link>
+
+          <Link
+            to="/applications"
+            className="sidebar-link"
+          >
+            <span className="sidebar-icon">◉</span>
+            Applications
+          </Link>
+
+          <Link
+            to="/company-details"
+            className="sidebar-link"
+          >
+            <span className="sidebar-icon">●</span>
+            Company Details
+          </Link>
+
+        </nav>
+
+        <div className="sidebar-bottom">
+
+          <div className="sidebar-company">
+
+            <div className="company-avatar">
+              {company.name
+                ? company.name.charAt(0).toUpperCase()
+                : "C"}
+            </div>
+
+            <div>
+              <strong>{company.name}</strong>
+              <span>{company.email}</span>
+            </div>
+
+          </div>
 
           <button
             type="button"
-            className="company-logout-btn"
+            className="sidebar-logout"
             onClick={handleLogout}
-          ></button>
+          >
+            Logout
           </button>
-        </div>
-      </div>
 
-      <div className="company-info">
-        <p>
-          <strong>Email:</strong> {company.email}
-        </p>
-
-        <p>
-          <strong>Role:</strong> {company.role}
-        </p>
-      </div>
-
-      <div className="dashboard-cards">
-        <div className="dashboard-card">
-          <h3>Active Jobs</h3>
-          <h2>{activeJobs}</h2>
-          <p>Currently active job posts</p>
         </div>
 
-        <div className="dashboard-card">
-          <h3>Pending Applications</h3>
-          <h2>{pendingApplications}</h2>
-          <p>Applications waiting for review</p>
-        </div>
+      </aside>
 
-        <div className="dashboard-card">
-          <h3>Accepted Applications</h3>
-          <h2>{acceptedApplications}</h2>
-          <p>Successfully accepted applicants</p>
-        </div>
+      {/* MAIN CONTENT */}
 
-        <div className="dashboard-card">
-          <h3>Rejected Applications</h3>
-          <h2>{rejectedApplications}</h2>
-          <p>Rejected applications</p>
-        </div>
-      </div>
+      <main className="company-main">
 
-      <div className="dashboard-actions">
-        <Link
-          to="/post-job"
-          className="dashboard-action"
-        >
-          <h3>Post a Job</h3>
-          <p>Create a new job opportunity.</p>
-        </Link>
+        {/* TOP HEADER */}
 
-        <Link
-          to="/my-jobs"
-          className="dashboard-action"
-        >
-          <h3>My Jobs</h3>
-          <p>View and manage your job posts.</p>
-        </Link>
+        <header className="company-topbar">
 
-        <Link
-          to="/applications"
-          className="dashboard-action"
-        >
-          <h3>Applications</h3>
-          <p>View candidates who applied.</p>
-        </Link>
+          <div>
+            <p className="dashboard-label">
+              COMPANY DASHBOARD
+            </p>
 
-        <button
-          type="button"
-          className={`dashboard-action company-details-action ${
-            showCompanyDetails ? "company-details-active" : ""
-          }`}
-          onClick={handleCompanyDetails}
-        >
-          <h3>
-            Company Details
-            <span className="company-details-arrow">
-              {showCompanyDetails ? "▲" : "▼"}
-            </span>
-          </h3>
+            <h1>
+              Welcome back, {company.name}
+            </h1>
 
-          <p>
-            {showCompanyDetails
-              ? "Hide your company information."
-              : "View your company information."}
-          </p>
-        </button>
-      </div>
-
-      {showCompanyDetails && (
-        <div className="company-details-panel">
-          <div className="company-details-header">
-            <h2>Company Details</h2>
-
-            <button
-              type="button"
-              className="company-details-close"
-              onClick={handleCompanyDetails}
-            >
-              Close
-            </button>
+            <p className="dashboard-subtitle">
+              Manage your jobs, candidates and company profile.
+            </p>
           </div>
 
-          <div className="company-details-grid">
-            <div className="company-detail-item">
-              <span>Company Name</span>
-              <strong>{company.name || "Not available"}</strong>
+          <Link
+            to="/post-job"
+            className="top-post-btn"
+          >
+            <span>+</span>
+            Post a Job
+          </Link>
+
+        </header>
+
+        {/* COMPANY INFO */}
+
+        <section className="company-profile-bar">
+
+          <div className="profile-left">
+
+            <div className="large-company-avatar">
+              {company.name
+                ? company.name.charAt(0).toUpperCase()
+                : "C"}
             </div>
 
-            <div className="company-detail-item">
-              <span>Email</span>
-              <strong>{company.email || "Not available"}</strong>
+            <div>
+              <h3>{company.name}</h3>
+
+              <p>{company.email}</p>
             </div>
 
-            <div className="company-detail-item">
-              <span>Location</span>
-              <strong>{company.location || "Not available"}</strong>
-            </div>
+          </div>
 
-            <div className="company-detail-item">
-              <span>Industry</span>
-              <strong>{company.industry || "Not available"}</strong>
-            </div>
+          <div className="profile-right">
 
-            <div className="company-detail-item">
+            <div className="profile-item">
               <span>Role</span>
               <strong>{company.role || "Company"}</strong>
             </div>
 
-            <div className="company-detail-item">
-              <span>Company ID</span>
-              <strong>{company.id || "Not available"}</strong>
+            <div className="profile-divider"></div>
+
+            <Link
+              to="/company-details"
+              className="view-profile-btn"
+            >
+              View Company Details
+            </Link>
+
+          </div>
+
+        </section>
+
+        {/* STATISTICS */}
+
+        <section className="dashboard-section">
+
+          <div className="section-heading">
+            <div>
+              <h2>Overview</h2>
+              <p>Your recruitment activity at a glance.</p>
             </div>
           </div>
-        </div>
-      )}
+
+          <div className="statistics-grid">
+
+            <div className="stat-card">
+
+              <div className="stat-top">
+                <div className="stat-icon">J</div>
+
+                <span className="stat-status">
+                  Active
+                </span>
+              </div>
+
+              <div className="stat-number">
+                {activeJobs}
+              </div>
+
+              <h3>Active Jobs</h3>
+
+              <p>
+                Currently active job posts
+              </p>
+
+            </div>
+
+            <div className="stat-card">
+
+              <div className="stat-top">
+                <div className="stat-icon">P</div>
+
+                <span className="stat-status">
+                  Review
+                </span>
+              </div>
+
+              <div className="stat-number">
+                {pendingApplications}
+              </div>
+
+              <h3>Pending Applications</h3>
+
+              <p>
+                Applications waiting for review
+              </p>
+
+            </div>
+
+            <div className="stat-card">
+
+              <div className="stat-top">
+                <div className="stat-icon">✓</div>
+
+                <span className="stat-status">
+                  Selected
+                </span>
+              </div>
+
+              <div className="stat-number">
+                {acceptedApplications}
+              </div>
+
+              <h3>Accepted Applications</h3>
+
+              <p>
+                Successfully accepted applicants
+              </p>
+
+            </div>
+
+            <div className="stat-card">
+
+              <div className="stat-top">
+                <div className="stat-icon">×</div>
+
+                <span className="stat-status">
+                  Closed
+                </span>
+              </div>
+
+              <div className="stat-number">
+                {rejectedApplications}
+              </div>
+
+              <h3>Rejected Applications</h3>
+
+              <p>
+                Rejected applications
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* QUICK ACTIONS */}
+
+        <section className="dashboard-section">
+
+          <div className="section-heading">
+
+            <div>
+              <h2>Quick Actions</h2>
+
+              <p>
+                Manage your company activities quickly.
+              </p>
+            </div>
+
+          </div>
+
+          <div className="quick-actions-grid">
+
+            <Link
+              to="/post-job"
+              className="quick-action-card"
+            >
+
+              <div className="quick-action-icon">
+                +
+              </div>
+
+              <div className="quick-action-content">
+                <h3>Post a Job</h3>
+
+                <p>
+                  Create a new job opportunity and find talented candidates.
+                </p>
+              </div>
+
+              <span className="quick-arrow">
+                →
+              </span>
+
+            </Link>
+
+            <Link
+              to="/my-jobs"
+              className="quick-action-card"
+            >
+
+              <div className="quick-action-icon">
+                J
+              </div>
+
+              <div className="quick-action-content">
+                <h3>My Jobs</h3>
+
+                <p>
+                  View, edit and manage all your posted jobs.
+                </p>
+              </div>
+
+              <span className="quick-arrow">
+                →
+              </span>
+
+            </Link>
+
+            <Link
+              to="/applications"
+              className="quick-action-card"
+            >
+
+              <div className="quick-action-icon">
+                A
+              </div>
+
+              <div className="quick-action-content">
+                <h3>Applications</h3>
+
+                <p>
+                  Review candidates and manage received applications.
+                </p>
+              </div>
+
+              <span className="quick-arrow">
+                →
+              </span>
+
+            </Link>
+
+            <Link
+              to="/company-details"
+              className="quick-action-card"
+            >
+
+              <div className="quick-action-icon">
+                C
+              </div>
+
+              <div className="quick-action-content">
+                <h3>Company Details</h3>
+
+                <p>
+                  Manage your company information and profile.
+                </p>
+              </div>
+
+              <span className="quick-arrow">
+                →
+              </span>
+
+            </Link>
+
+          </div>
+
+        </section>
+
+        {/* RECENT JOBS + APPLICATIONS */}
+
+        <section className="dashboard-bottom-grid">
+
+          {/* RECENT JOBS */}
+
+          <div className="dashboard-panel">
+
+            <div className="panel-header">
+
+              <div>
+                <h2>Recent Jobs</h2>
+
+                <p>
+                  Your latest job postings
+                </p>
+              </div>
+
+              <Link
+                to="/my-jobs"
+                className="panel-link"
+              >
+                View All
+              </Link>
+
+            </div>
+
+            {jobs.length === 0 ? (
+
+              <div className="empty-state">
+
+                <div className="empty-icon">
+                  J
+                </div>
+
+                <h3>No Jobs Posted</h3>
+
+                <p>
+                  Start by creating your first job opportunity.
+                </p>
+
+                <Link
+                  to="/post-job"
+                  className="empty-btn"
+                >
+                  Post Your First Job
+                </Link>
+
+              </div>
+
+            ) : (
+
+              <div className="recent-list">
+
+                {jobs.slice(0, 5).map((job) => {
+
+                  const status = String(
+                    job.status || "Active"
+                  )
+                    .toLowerCase()
+                    .trim();
+
+                  const isClosed =
+                    status === "closed";
+
+                  return (
+                    <div
+                      className="recent-job"
+                      key={job.id}
+                    >
+
+                      <div className="recent-job-icon">
+                        J
+                      </div>
+
+                      <div className="recent-job-info">
+
+                        <h3>
+                          {job.title || "Untitled Job"}
+                        </h3>
+
+                        <p>
+                          {job.location || "Location not specified"}
+                        </p>
+
+                      </div>
+
+                      <span
+                        className={
+                          isClosed
+                            ? "job-status closed"
+                            : "job-status active"
+                        }
+                      >
+                        {isClosed
+                          ? "Closed"
+                          : "Active"}
+                      </span>
+
+                    </div>
+                  );
+                })}
+
+              </div>
+
+            )}
+
+          </div>
+
+          {/* APPLICATIONS */}
+
+          <div className="dashboard-panel">
+
+            <div className="panel-header">
+
+              <div>
+                <h2>Applications</h2>
+
+                <p>
+                  Latest candidate applications
+                </p>
+              </div>
+
+              <Link
+                to="/applications"
+                className="panel-link"
+              >
+                View All
+              </Link>
+
+            </div>
+
+            {applications.length === 0 ? (
+
+              <div className="empty-state">
+
+                <div className="empty-icon">
+                  A
+                </div>
+
+                <h3>No Applications</h3>
+
+                <p>
+                  Applications from candidates will appear here.
+                </p>
+
+              </div>
+
+            ) : (
+
+              <div className="recent-list">
+
+                {applications
+                  .slice(0, 5)
+                  .map((application, index) => {
+
+                    const status = String(
+                      application.status || "Pending"
+                    )
+                      .toLowerCase()
+                      .trim();
+
+                    let statusClass = "pending";
+
+                    if (
+                      status === "accepted" ||
+                      status === "accept"
+                    ) {
+                      statusClass = "accepted";
+                    }
+
+                    if (
+                      status === "rejected" ||
+                      status === "reject"
+                    ) {
+                      statusClass = "rejected";
+                    }
+
+                    return (
+                      <div
+                        className="recent-application"
+                        key={
+                          application.id ||
+                          index
+                        }
+                      >
+
+                        <div className="applicant-avatar">
+                          {(
+                            application.name ||
+                            application.user_name ||
+                            "A"
+                          )
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+
+                        <div className="applicant-info">
+
+                          <h3>
+                            {application.name ||
+                              application.user_name ||
+                              "Applicant"}
+                          </h3>
+
+                          <p>
+                            {application.job_title ||
+                              application.title ||
+                              "Job Application"}
+                          </p>
+
+                        </div>
+
+                        <span
+                          className={`application-status ${statusClass}`}
+                        >
+                          {application.status ||
+                            "Pending"}
+                        </span>
+
+                      </div>
+                    );
+                  })}
+
+              </div>
+
+            )}
+
+          </div>
+
+        </section>
+
+        {/* FOOTER */}
+
+        <footer className="company-dashboard-footer">
+
+          <p>
+            © 2026 CareerGo. Find Jobs. Build Careers.
+          </p>
+
+          <Link to="/company-details">
+            Company Profile
+          </Link>
+
+        </footer>
+
+      </main>
+
     </div>
   );
 }
