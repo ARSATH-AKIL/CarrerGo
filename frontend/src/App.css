@@ -1890,162 +1890,400 @@ color:#000000;
   font-size: 14px;
   font-weight: 600;
 }
-/* =========================================================
-   ADMIN DASHBOARD
-========================================================= */
+* {
+  box-sizing: border-box;
+}
+
 .admin-dashboard {
   width: 100%;
-  padding: 50px 3%;
-  background: #f5f7fb;
   min-height: calc(100vh - 76px);
+  padding: 40px 4%;
+  background: #f6f7f9;
+  color: #111111;
 }
+
 .admin-header {
-  text-align: center;
-  margin-bottom: 35px;
+  margin-bottom: 32px;
 }
+
 .admin-header h1 {
-  margin: 0 0 10px;
-  font-size: 42px;
-  font-weight: 600;
-}
-.admin-header p {
   margin: 0;
-  color: #666;
-  font-size: 20px;
+  font-size: 36px;
+  font-weight: 700;
+  color: #111111;
 }
+
+.admin-header p {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: #666666;
+}
+
 .admin-stats {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 25px;
-  margin-top: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 40px;
 }
+
 .admin-stat-card {
+  min-height: 135px;
+  padding: 24px;
   background: #ffffff;
-  min-height: 150px;
-  border-radius: 14px;
-  padding: 25px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
   transition: 0.2s ease;
+  cursor: default;
 }
+
 .admin-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+  border-color: #111111;
+  transform: translateY(-2px);
 }
+
 .admin-stat-card h3 {
-  margin: 0 0 18px;
-  font-size: 22px;
-  color: #666;
+  margin: 0 0 12px;
+  font-size: 14px;
   font-weight: 600;
+  color: #666666;
 }
+
 .admin-stat-card h2 {
   margin: 0;
-  font-size: 34px;
-  color: #1e3a5f;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.admin-stat-card.company-card {
+  cursor: pointer;
+}
+
+.admin-stat-card.company-card:hover {
+  background: #111111;
+}
+
+.admin-stat-card.company-card:hover h3,
+.admin-stat-card.company-card:hover h2 {
+  color: #ffffff;
+}
+
+.admin-section {
+  width: 100%;
+  margin-top: 35px;
+}
+
+.admin-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.admin-section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.admin-section-header p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #777777;
+}
+
+.admin-company-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.admin-company-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-company-card:hover {
+  border-color: #111111;
+  transform: translateY(-2px);
+}
+
+.admin-company-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.admin-company-card p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #666666;
+}
+
+.admin-company-card span {
+  display: inline-block;
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.admin-company-details {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 28px;
+}
+
+.admin-company-details h2 {
+  margin: 0 0 25px;
+  font-size: 25px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.admin-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.admin-detail-row:last-child {
+  border-bottom: none;
+}
+
+.admin-detail-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #777777;
+}
+
+.admin-detail-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111111;
+  text-align: right;
+}
+
+.admin-back-btn {
+  border: 1px solid #111111;
+  background: #ffffff;
+  color: #111111;
+  padding: 10px 18px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 14px;
   font-weight: 600;
 }
-/* =========================================================
-   ADMIN JOB MANAGEMENT
-========================================================= */
-.admin-job-management {
-  margin-top: 50px;
+
+.admin-back-btn:hover {
+  background: #111111;
+  color: #ffffff;
 }
+
+.admin-job-management {
+  width: 100%;
+  margin-top: 40px;
+}
+
 .admin-job-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 18px;
 }
+
 .admin-job-header h2 {
   margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111111;
 }
+
 .admin-post-job-btn {
   border: none;
-  background: #1e3a5f;
+  background: #111111;
   color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 15px;
+  padding: 11px 18px;
+  border-radius: 7px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
+
 .admin-post-job-btn:hover {
-  background: #142a45;
+  background: #333333;
 }
+
 .admin-job-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
+
 .admin-job-card {
+  width: 100%;
   background: #ffffff;
-  border-radius: 14px;
-  padding: 22px 25px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 25px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: 0.2s ease;
 }
+
+.admin-job-card:hover {
+  border-color: #cccccc;
+}
+
 .admin-job-info {
   flex: 1;
 }
+
 .admin-job-info h3 {
-  margin: 0 0 8px;
-  font-size: 21px;
-  color: #111;
+  margin: 0 0 7px;
+  font-size: 19px;
+  font-weight: 700;
+  color: #111111;
 }
+
 .admin-job-company {
   margin: 0 0 10px;
-  color: #b8860b;
+  font-size: 14px;
   font-weight: 600;
+  color: #555555;
 }
+
 .admin-job-details {
   margin: 5px 0;
-  color: #666;
-  font-size: 14px;
+  font-size: 13px;
+  color: #777777;
 }
+
 .admin-job-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
+
 .admin-edit-btn,
 .admin-delete-btn {
   border: none;
-  padding: 10px 16px;
+  padding: 9px 15px;
   border-radius: 7px;
-  cursor: pointer;
+  font-size: 13px;
   font-weight: 600;
+  cursor: pointer;
 }
+
 .admin-edit-btn {
   background: #eeeeee;
-  color: #222;
+  color: #111111;
 }
+
 .admin-edit-btn:hover {
   background: #dddddd;
 }
+
 .admin-delete-btn {
-  background: #ef4444;
+  background: #111111;
   color: #ffffff;
 }
+
 .admin-delete-btn:hover {
-  background: #dc2626;
+  background: #333333;
 }
+
 .admin-no-jobs {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 40px 20px;
   text-align: center;
-  color: #666;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  color: #777777;
+  font-size: 14px;
+}
+
+.admin-loading {
+  width: 100%;
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #666666;
+}
+
+@media (max-width: 1100px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-company-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-dashboard {
+    padding: 25px 4%;
+  }
+
+  .admin-header h1 {
+    font-size: 28px;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-company-list {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-section-header,
+  .admin-job-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .admin-job-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-job-actions {
+    width: 100%;
+  }
+
+  .admin-edit-btn,
+  .admin-delete-btn {
+    flex: 1;
+  }
+
+  .admin-detail-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .admin-detail-value {
+    text-align: left;
+  }
+}
 }
 /* =========================================================
    APPLY JOB
