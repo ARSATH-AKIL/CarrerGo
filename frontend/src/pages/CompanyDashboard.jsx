@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 function CompanyDashboard() {
+  const navigate = useNavigate();
 
   const [company, setCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
@@ -9,394 +10,356 @@ function CompanyDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const storedCompany = localStorage.getItem("company");
 
     if (!storedCompany) {
-      window.location.href = "/company-login";
+      navigate("/company-login");
       return;
     }
 
     try {
-
       const companyData = JSON.parse(storedCompany);
-
       setCompany(companyData);
-
-      /* GET COMPANY JOBS */
 
       fetch(
         `https://servercarrergo.onrender.com/api/company/jobs/${companyData.id}`
       )
         .then((response) => {
-
           if (!response.ok) {
             throw new Error("Unable to get company jobs");
           }
-
           return response.json();
-
         })
         .then((data) => {
-
-          console.log("COMPANY JOBS:", data);
-
           setJobs(data.jobs || []);
-
         })
         .catch((error) => {
-
           console.error("COMPANY JOBS ERROR:", error);
-
           setJobs([]);
-
         });
-
-      /* GET COMPANY APPLICATIONS */
 
       fetch(
         `https://servercarrergo.onrender.com/api/company/applications/${companyData.id}`
       )
         .then((response) => {
-
           if (!response.ok) {
             throw new Error("Unable to get company applications");
           }
-
           return response.json();
-
         })
         .then((data) => {
-
-          console.log("COMPANY APPLICATIONS:", data);
-
           setApplications(data.applications || []);
-
         })
         .catch((error) => {
-
           console.error("COMPANY APPLICATIONS ERROR:", error);
-
           setApplications([]);
-
         })
         .finally(() => {
-
           setLoading(false);
-
         });
-
     } catch (error) {
-
       console.error("COMPANY DATA ERROR:", error);
-
       localStorage.removeItem("company");
-
-      window.location.href = "/company-login";
-
+      navigate("/company-login");
     }
-
-  }, []);
-
-  /* ACTIVE JOBS */
+  }, [navigate]);
 
   const activeJobs = jobs.filter((job) => {
-
     const status = String(job.status || "")
       .toLowerCase()
       .trim();
 
     return status !== "closed";
-
   }).length;
-
-  /* PENDING */
 
   const pendingApplications = applications.filter((application) => {
-
     const status = String(application.status || "")
       .toLowerCase()
       .trim();
 
-    return (
-      status === "applied" ||
-      status === "pending"
-    );
-
+    return status === "applied" || status === "pending";
   }).length;
-
-  /* ACCEPTED */
 
   const acceptedApplications = applications.filter((application) => {
-
     const status = String(application.status || "")
       .toLowerCase()
       .trim();
 
-    return (
-      status === "accepted" ||
-      status === "accept"
-    );
-
+    return status === "accepted" || status === "accept";
   }).length;
-
-  /* REJECTED */
 
   const rejectedApplications = applications.filter((application) => {
-
     const status = String(application.status || "")
       .toLowerCase()
       .trim();
 
-    return (
-      status === "rejected" ||
-      status === "reject"
-    );
-
+    return status === "rejected" || status === "reject";
   }).length;
 
-  if (loading || !company) {
+  const handleLogout = () => {
+    localStorage.removeItem("company");
+    navigate("/company-login");
+  };
 
+  if (!company || loading) {
     return (
-      <div className="company-dashboard-loading">
-        <div className="loading-spinner"></div>
+      <div className="company-loading">
         <p>Loading company dashboard...</p>
       </div>
     );
-
   }
 
-  const companyName = company.name || "Company";
-  const companyEmail = company.email || "";
-  const companyRole = company.role || "company";
-  const firstLetter = companyName.charAt(0).toUpperCase();
-
   return (
-
     <div className="company-dashboard-page">
 
-      {/* TOP HEADER */}
+      {/* SIDEBAR */}
+      <aside className="company-sidebar">
 
-      <div className="company-dashboard-header">
-
-        <div className="company-header-text">
-
-          <span className="company-page-label">
-            COMPANY DASHBOARD
-          </span>
-
-          <h1>
-            Welcome back, {companyName}
-          </h1>
-
-          <p>
-            Manage your jobs, candidates and company profile.
-          </p>
-
+        <div className="company-sidebar-logo">
+          <div className="company-logo-box">
+            C
+          </div>
+          <span>CareerGo</span>
         </div>
 
-      </div>
+        <nav className="company-sidebar-nav">
 
+          <Link
+            to="/company-dashboard"
+            className="company-sidebar-link active"
+          >
+            <span className="sidebar-icon">⌂</span>
+            <span>Dashboard</span>
+          </Link>
 
-      {/* COMPANY INFORMATION CARD */}
+          <Link
+            to="/post-job"
+            className="company-sidebar-link"
+          >
+            <span className="sidebar-icon">+</span>
+            <span>Post a Job</span>
+          </Link>
 
-      <section className="company-summary-card">
+          <Link
+            to="/my-jobs"
+            className="company-sidebar-link"
+          >
+            <span className="sidebar-icon">▣</span>
+            <span>My Jobs</span>
+          </Link>
 
-        <div className="company-summary-left">
-
-          <div className="company-large-avatar">
-            {firstLetter}
-          </div>
-
-          <div className="company-summary-details">
-
-            <h2>
-              {companyName}
-            </h2>
-
-            <p>
-              {companyEmail}
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div className="company-summary-right">
-
-          <div className="company-role">
-
-            <span>Role</span>
-
-            <strong>
-              {companyRole}
-            </strong>
-
-          </div>
+          <Link
+            to="/applications"
+            className="company-sidebar-link"
+          >
+            <span className="sidebar-icon">◉</span>
+            <span>Applications</span>
+          </Link>
 
           <Link
             to="/company-profile"
-            className="view-company-button"
+            className="company-sidebar-link"
           >
-            View Company Details
+            <span className="sidebar-icon">●</span>
+            <span>Company Details</span>
           </Link>
 
+        </nav>
+
+        {/* SIDEBAR BOTTOM */}
+        <div className="company-sidebar-bottom">
+
+          <div className="company-sidebar-profile">
+
+            <div className="sidebar-profile-icon">
+              {company.name
+                ? company.name.charAt(0).toUpperCase()
+                : "C"}
+            </div>
+
+            <div className="sidebar-profile-info">
+              <strong>{company.name}</strong>
+              <span>{company.email}</span>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            className="company-sidebar-logout"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+
         </div>
 
-      </section>
+      </aside>
 
+      {/* MAIN CONTENT */}
+      <main className="company-main-content">
 
-      {/* OVERVIEW */}
-
-      <section className="company-overview">
-
-        <div className="section-heading">
+        {/* HEADER */}
+        <section className="company-dashboard-header">
 
           <div>
+            <span className="company-dashboard-label">
+              COMPANY DASHBOARD
+            </span>
+
+            <h1>
+              Welcome back, {company.name}
+            </h1>
+
+            <p>
+              Manage your jobs, candidates and company profile.
+            </p>
+          </div>
+
+        </section>
+
+        {/* COMPANY CARD */}
+        <section className="company-info-card">
+
+          <div className="company-info-left">
+
+            <div className="company-main-logo">
+              {company.name
+                ? company.name.charAt(0).toUpperCase()
+                : "C"}
+            </div>
+
+            <div className="company-main-details">
+              <h2>{company.name}</h2>
+              <p>{company.email}</p>
+            </div>
+
+          </div>
+
+          <div className="company-info-right">
+
+            <div className="company-role">
+              <span>Role</span>
+              <strong>{company.role || "company"}</strong>
+            </div>
+
+            <Link
+              to="/company-profile"
+              className="company-details-button"
+            >
+              View Company Details
+            </Link>
+
+          </div>
+
+        </section>
+
+        {/* OVERVIEW */}
+        <section className="company-overview">
+
+          <div className="overview-heading">
             <h2>Overview</h2>
-
-            <p>
-              Your recruitment activity at a glance.
-            </p>
+            <p>Your recruitment activity at a glance.</p>
           </div>
 
-        </div>
+          <div className="overview-grid">
 
+            <div className="overview-card">
 
-        <div className="overview-grid">
+              <div className="overview-card-top">
+                <div className="overview-icon">
+                  J
+                </div>
 
-          {/* ACTIVE JOBS */}
-
-          <div className="overview-card">
-
-            <div className="overview-card-top">
-
-              <div className="overview-icon">
-                J
+                <span className="overview-status">
+                  Active
+                </span>
               </div>
 
-              <span className="overview-status active-status">
-                Active
-              </span>
+              <h3>{activeJobs}</h3>
+
+              <strong>Active Jobs</strong>
+
+              <p>
+                Currently active job posts
+              </p>
 
             </div>
 
-            <div className="overview-number">
-              {activeJobs}
-            </div>
+            <div className="overview-card">
 
-            <h3>
-              Active Jobs
-            </h3>
+              <div className="overview-card-top">
+                <div className="overview-icon">
+                  P
+                </div>
 
-            <p>
-              Currently active job posts
-            </p>
-
-          </div>
-
-
-          {/* PENDING */}
-
-          <div className="overview-card">
-
-            <div className="overview-card-top">
-
-              <div className="overview-icon">
-                P
+                <span className="overview-status">
+                  Review
+                </span>
               </div>
 
-              <span className="overview-status pending-status">
-                Review
-              </span>
+              <h3>{pendingApplications}</h3>
+
+              <strong>Pending Applications</strong>
+
+              <p>
+                Applications waiting for review
+              </p>
 
             </div>
 
-            <div className="overview-number">
-              {pendingApplications}
-            </div>
+            <div className="overview-card">
 
-            <h3>
-              Pending Applications
-            </h3>
+              <div className="overview-card-top">
+                <div className="overview-icon">
+                  ✓
+                </div>
 
-            <p>
-              Applications waiting for review
-            </p>
-
-          </div>
-
-
-          {/* ACCEPTED */}
-
-          <div className="overview-card">
-
-            <div className="overview-card-top">
-
-              <div className="overview-icon">
-                ✓
+                <span className="overview-status">
+                  Selected
+                </span>
               </div>
 
-              <span className="overview-status accepted-status">
-                Selected
-              </span>
+              <h3>{acceptedApplications}</h3>
+
+              <strong>Accepted Applications</strong>
+
+              <p>
+                Successfully accepted applicants
+              </p>
 
             </div>
 
-            <div className="overview-number">
-              {acceptedApplications}
-            </div>
+            <div className="overview-card">
 
-            <h3>
-              Accepted Applications
-            </h3>
+              <div className="overview-card-top">
+                <div className="overview-icon">
+                  ×
+                </div>
 
-            <p>
-              Successfully accepted applicants
-            </p>
-
-          </div>
-
-
-          {/* REJECTED */}
-
-          <div className="overview-card">
-
-            <div className="overview-card-top">
-
-              <div className="overview-icon">
-                ×
+                <span className="overview-status">
+                  Closed
+                </span>
               </div>
 
-              <span className="overview-status rejected-status">
-                Closed
-              </span>
+              <h3>{rejectedApplications}</h3>
+
+              <strong>Rejected Applications</strong>
+
+              <p>
+                Rejected applications
+              </p>
 
             </div>
-
-            <div className="overview-number">
-              {rejectedApplications}
-            </div>
-
-            <h3>
-              Rejected Applications
-            </h3>
-
-            <p>
-              Rejected applications
-            </p>
 
           </div>
 
-        </div>
+        </section>
 
-      </section>
+      </main>
 
     </div>
-
   );
-
 }
 
 export default CompanyDashboard;
