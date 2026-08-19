@@ -4,7 +4,7 @@
 
 .company-layout {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh;F
   display: flex;
   background: #f5f7fb;
   color: #111111;
@@ -206,7 +206,7 @@
 .company-main-content {
   width: calc(100% - 250px);
   min-height: 100vh;
-  margin-left: 50px;
+  margin-left: 150px;
   padding: 55px 60px;
   background: #f5f7fb;
 }
@@ -648,7 +648,7 @@
 
   .company-main-content {
     width: calc(100% - 210px);
-    margin-left: 50px;
+    margin-left: 150px;
     padding: 30px 20px;
   }
 
