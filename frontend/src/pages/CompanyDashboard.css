@@ -1,14 +1,29 @@
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f7fb;
+  color: #111111;
 }
 
 .company-layout {
   width: 100%;
-  min-height: 100vh;F
+  min-height: 100vh;
   display: flex;
   background: #f5f7fb;
   color: #111111;
-}f
+}
 
 /* =========================
    SIDEBAR
@@ -26,6 +41,8 @@
   background: #111111;
   color: #ffffff;
   z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* =========================
@@ -49,7 +66,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 50%;
   background: #ffffff;
   color: #111111;
   font-size: 14px;
@@ -60,6 +77,7 @@
   color: #ffffff;
   font-size: 19px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -206,7 +224,7 @@
 .company-main-content {
   width: calc(100% - 250px);
   min-height: 100vh;
-  margin-left: 150px;
+  margin-left: 250px;
   padding: 55px 60px;
   background: #f5f7fb;
 }
@@ -227,6 +245,7 @@
 }
 
 .company-header-text {
+  width: 100%;
   text-align: left;
 }
 
@@ -252,6 +271,7 @@
   margin: 10px 0 0;
   color: #6b7280;
   font-size: 14px;
+  line-height: 1.5;
 }
 
 /* =========================
@@ -369,6 +389,7 @@
 .section-heading {
   width: 100%;
   margin-bottom: 18px;
+  text-align: center;
 }
 
 .section-heading h2 {
@@ -398,6 +419,7 @@
 }
 
 .overview-card {
+  min-width: 0;
   min-height: 190px;
   padding: 20px;
   display: flex;
@@ -418,6 +440,7 @@
 .overview-icon {
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -435,6 +458,7 @@
   color: #555555;
   font-size: 9px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .overview-number {
@@ -565,6 +589,7 @@
 
 .profile-main {
   width: 100%;
+  min-width: 0;
 }
 
 .profile-main h2 {
@@ -628,18 +653,59 @@
 }
 
 /* =========================
-   RESPONSIVE
+   LARGE SCREEN
+========================= */
+
+@media (max-width: 1200px) {
+  .company-main-content {
+    padding: 45px 40px;
+  }
+
+  .company-dashboard-page {
+    max-width: 100%;
+  }
+
+  .overview-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .overview-card {
+    padding: 18px;
+  }
+}
+
+/* =========================
+   TABLET
 ========================= */
 
 @media (max-width: 1100px) {
   .company-main-content {
-    padding: 40px 35px;
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    padding: 40px 30px;
+  }
+
+  .company-header-text h1 {
+    font-size: 32px;
   }
 
   .overview-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .company-summary-card {
+    gap: 18px;
+  }
+
+  .company-summary-right {
+    gap: 16px;
+  }
 }
+
+/* =========================
+   SMALL TABLET
+========================= */
 
 @media (max-width: 800px) {
   .company-sidebar {
@@ -648,39 +714,64 @@
 
   .company-main-content {
     width: calc(100% - 210px);
-    margin-left: 150px;
+    margin-left: 210px;
     padding: 30px 20px;
+  }
+
+  .company-header-text h1 {
+    font-size: 29px;
   }
 
   .company-summary-card {
     flex-direction: column;
     align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .company-summary-left {
+    width: 100%;
   }
 
   .company-summary-right {
     width: 100%;
+    justify-content: flex-start;
+  }
+
+  .overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .overview-card {
+    min-height: 175px;
   }
 }
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 600px) {
   .company-layout {
     display: block;
+    width: 100%;
   }
 
   .company-sidebar {
     position: relative;
+    top: auto;
+    left: auto;
     width: 100%;
     height: auto;
     min-height: auto;
+    padding: 18px 15px;
   }
 
-  .company-main-content {
-    width: 100%;
-    margin-left: 150px;
-    padding: 25px 16px;
+  .company-logo-area {
+    padding: 5px 8px 18px;
   }
 
   .company-sidebar-nav {
+    margin-top: 20px;
     margin-bottom: 20px;
   }
 
@@ -688,12 +779,47 @@
     margin-top: 20px;
   }
 
-  .company-header-text h1 {
-    font-size: 28px;
+  .company-main-content {
+    width: 100%;
+    margin-left: 0;
+    min-height: auto;
+    padding: 25px 16px;
   }
 
-  .overview-grid {
-    grid-template-columns: 1fr;
+  .company-dashboard-page {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .company-dashboard-header {
+    margin-bottom: 25px;
+  }
+
+  .company-header-text {
+    text-align: left;
+  }
+
+  .company-page-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+
+  .company-header-text h1 {
+    font-size: 27px;
+    line-height: 1.2;
+  }
+
+  .company-header-text p {
+    font-size: 13px;
+  }
+
+  .company-summary-card {
+    margin-bottom: 30px;
+    padding: 18px;
+  }
+
+  .company-summary-left {
+    align-items: center;
   }
 
   .company-summary-right {
@@ -711,12 +837,109 @@
     width: 100%;
   }
 
+  .section-heading {
+    margin-bottom: 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 19px;
+  }
+
+  .section-heading p {
+    font-size: 11px;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .overview-card {
+    min-height: 165px;
+    padding: 18px;
+  }
+
+  .overview-number {
+    margin-top: 24px;
+    font-size: 28px;
+  }
+
+  .company-profile-page {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .company-profile-header {
     flex-direction: column;
+    gap: 15px;
+  }
+
+  .company-profile-header h1 {
+    font-size: 29px;
   }
 
   .company-profile-card {
     flex-direction: column;
-    padding: 25px;
+    padding: 22px;
+    gap: 18px;
+  }
+
+  .profile-main h2 {
+    font-size: 21px;
+  }
+
+  .profile-info-row {
+    min-height: 50px;
+    gap: 12px;
+  }
+
+  .profile-info-row span,
+  .profile-info-row strong {
+    font-size: 11px;
+  }
+
+  .account-information {
+    padding: 20px;
+  }
+}
+
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media (max-width: 400px) {
+  .company-sidebar {
+    padding: 15px 12px;
+  }
+
+  .company-logo-text {
+    font-size: 17px;
+  }
+
+  .company-main-content {
+    padding: 20px 12px;
+  }
+
+  .company-header-text h1 {
+    font-size: 24px;
+  }
+
+  .company-summary-card {
+    padding: 15px;
+  }
+
+  .company-large-avatar {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    font-size: 18px;
+  }
+
+  .overview-card {
+    padding: 16px;
+  }
+
+  .company-profile-card {
+    padding: 18px;
   }
 }
