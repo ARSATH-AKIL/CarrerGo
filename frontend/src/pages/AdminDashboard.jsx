@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 function AdminDashboard() {
+  const API_URL = "https://servercarrergo.onrender.com";
+
   const [stats, setStats] = useState({
     users: 0,
     companies: 0,
@@ -13,17 +15,28 @@ function AdminDashboard() {
   });
 
   const [jobs, setJobs] = useState([]);
+  const [users, setUsers] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [jobsLoading, setJobsLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(true);
 
   const [activeMenu, setActiveMenu] = useState("dashboard");
+
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const API_URL = "https://servercarrergo.onrender.com";
+  const [editingJob, setEditingJob] = useState(null);
+  const [savingJob, setSavingJob] = useState(false);
 
-  // ================================
-  // LOAD DASHBOARD
-  // ================================
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    location: "",
+    salary: "",
+    type: "",
+    skills: ""
+  });
 
   const loadDashboard = async () => {
     try {
@@ -38,9 +51,6 @@ function AdminDashboard() {
       }
 
       const data = await response.json();
-
-      console.log("ADMIN DASHBOARD DATA:", data);
-
       const dashboardStats = data.stats || {};
 
       setStats({
@@ -57,18 +67,11 @@ function AdminDashboard() {
           Number(dashboardStats.rejected_applications) || 0
       });
     } catch (error) {
-      console.error(
-        "ADMIN DASHBOARD ERROR:",
-        error
-      );
+      console.error("ADMIN DASHBOARD ERROR:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  // ================================
-  // LOAD JOBS
-  // ================================
 
   const loadJobs = async () => {
     try {
@@ -84,8 +87,6 @@ function AdminDashboard() {
 
       const data = await response.json();
 
-      console.log("ADMIN JOBS:", data);
-
       if (Array.isArray(data)) {
         setJobs(data);
       } else if (Array.isArray(data.jobs)) {
@@ -94,25 +95,45 @@ function AdminDashboard() {
         setJobs([]);
       }
     } catch (error) {
-      console.error(
-        "ADMIN JOBS ERROR:",
-        error
-      );
-
+      console.error("ADMIN JOBS ERROR:", error);
       setJobs([]);
     } finally {
       setJobsLoading(false);
     }
   };
 
+  const loadUsers = async () => {
+    try {
+      setUsersLoading(true);
+
+      const response = await fetch(
+        `${API_URL}/api/admin/users`
+      );
+
+      if (!response.ok) {
+        throw new Error("Unable to get users");
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data.users)) {
+        setUsers(data.users);
+      } else {
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error("ADMIN USERS ERROR:", error);
+      setUsers([]);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadDashboard();
     loadJobs();
+    loadUsers();
   }, []);
-
-  // ================================
-  // DELETE JOB
-  // ================================
 
   const handleDeleteJob = async (jobId) => {
     const confirmDelete = window.confirm(
@@ -135,31 +156,27 @@ function AdminDashboard() {
 
       if (!response.ok) {
         alert(
-          data.message ||
-            "Unable to delete job"
+          data.message || "Unable to delete job"
         );
-
         return;
       }
 
       setJobs((previousJobs) =>
         previousJobs.filter(
           (job) =>
-            Number(job.id) !==
-            Number(jobId)
+            Number(job.id) !== Number(jobId)
         )
       );
 
-      alert(
-        "Job deleted successfully"
-      );
+      if (editingJob?.id === jobId) {
+        setEditingJob(null);
+      }
+
+      alert("Job deleted successfully");
 
       loadDashboard();
     } catch (error) {
-      console.error(
-        "DELETE JOB ERROR:",
-        error
-      );
+      console.error("DELETE JOB ERROR:", error);
 
       alert(
         "Unable to connect to CareerGo backend"
@@ -167,19 +184,85 @@ function AdminDashboard() {
     }
   };
 
-  // ================================
-  // EDIT JOB
-  // ================================
-
   const handleEditJob = (job) => {
-    alert(
-      `Edit Job: ${job.title}`
-    );
+    setEditingJob(job);
+
+    setEditForm({
+      title: job.title || "",
+      description: job.description || "",
+      location: job.location || "",
+      salary: job.salary || "",
+      type: job.type || job.job_type || "",
+      skills: job.skills || ""
+    });
   };
 
-  // ================================
-  // LOGOUT
-  // ================================
+  const handleEditChange = (event) => {
+    const { name, value } = event.target;
+
+    setEditForm((previous) => ({
+      ...previous,
+      [name]: value
+    }));
+  };
+
+  const handleUpdateJob = async (event) => {
+    event.preventDefault();
+
+    if (!editingJob) {
+      return;
+    }
+
+    try {
+      setSavingJob(true);
+
+      const response = await fetch(
+        `${API_URL}/api/jobs/${editingJob.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(editForm)
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(
+          data.message || "Unable to update job"
+        );
+        return;
+      }
+
+      setJobs((previousJobs) =>
+        previousJobs.map((job) =>
+          Number(job.id) ===
+          Number(editingJob.id)
+            ? {
+                ...job,
+                ...editForm
+              }
+            : job
+        )
+      );
+
+      setEditingJob(null);
+
+      alert("Job updated successfully");
+
+      loadDashboard();
+    } catch (error) {
+      console.error("UPDATE JOB ERROR:", error);
+
+      alert(
+        "Unable to connect to CareerGo backend"
+      );
+    } finally {
+      setSavingJob(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("admin");
@@ -190,10 +273,6 @@ function AdminDashboard() {
     window.location.href = "/login";
   };
 
-  // ================================
-  // GET UNIQUE COMPANIES
-  // ================================
-
   const companies = [];
 
   jobs.forEach((job) => {
@@ -202,14 +281,14 @@ function AdminDashboard() {
       job.company ||
       "Company";
 
-    const alreadyExists =
-      companies.some(
-        (company) =>
-          company.name === companyName
-      );
+    const existingCompany = companies.find(
+      (company) =>
+        company.name === companyName
+    );
 
-    if (!alreadyExists) {
+    if (!existingCompany) {
       companies.push({
+        id: job.company,
         name: companyName,
         email:
           job.company_email ||
@@ -220,20 +299,9 @@ function AdminDashboard() {
         jobs: 1
       });
     } else {
-      const existingCompany =
-        companies.find(
-          (company) =>
-            company.name ===
-            companyName
-        );
-
       existingCompany.jobs += 1;
     }
   });
-
-  // ================================
-  // SIDEBAR MENU
-  // ================================
 
   const menuItems = [
     {
@@ -263,10 +331,6 @@ function AdminDashboard() {
     }
   ];
 
-  // ================================
-  // LOADING
-  // ================================
-
   if (loading) {
     return (
       <div className="admin-layout">
@@ -292,10 +356,6 @@ function AdminDashboard() {
       </div>
     );
   }
-
-  // ================================
-  // DASHBOARD
-  // ================================
 
   const renderDashboard = () => {
     return (
@@ -342,9 +402,7 @@ function AdminDashboard() {
         <div className="admin-stats">
           <div className="admin-stat-card">
             <h3>Active Jobs</h3>
-            <h2>
-              {stats.active_jobs}
-            </h2>
+            <h2>{stats.active_jobs}</h2>
           </div>
 
           <div className="admin-stat-card">
@@ -372,11 +430,92 @@ function AdminDashboard() {
     );
   };
 
-  // ================================
-  // USERS
-  // ================================
-
   const renderUsers = () => {
+    if (selectedUser) {
+      return (
+        <div className="admin-section">
+          <button
+            className="admin-back-btn"
+            onClick={() =>
+              setSelectedUser(null)
+            }
+          >
+            ← Back to Users
+          </button>
+
+          <div
+            className="admin-company-details"
+            style={{ marginTop: "20px" }}
+          >
+            <h2>User Details</h2>
+
+            <div className="admin-detail-row">
+              <span className="admin-detail-label">
+                User ID
+              </span>
+
+              <span className="admin-detail-value">
+                {selectedUser.id}
+              </span>
+            </div>
+
+            <div className="admin-detail-row">
+              <span className="admin-detail-label">
+                Name
+              </span>
+
+              <span className="admin-detail-value">
+                {selectedUser.name ||
+                  "Not available"}
+              </span>
+            </div>
+
+            <div className="admin-detail-row">
+              <span className="admin-detail-label">
+                Email
+              </span>
+
+              <span className="admin-detail-value">
+                {selectedUser.email ||
+                  "Not available"}
+              </span>
+            </div>
+
+            <div className="admin-detail-row">
+              <span className="admin-detail-label">
+                Role
+              </span>
+
+              <span className="admin-detail-value">
+                {selectedUser.role ||
+                  "user"}
+              </span>
+            </div>
+
+            <div className="admin-detail-row">
+              <span className="admin-detail-label">
+                Resume
+              </span>
+
+              <span className="admin-detail-value">
+                {selectedUser.resume_url ? (
+                  <a
+                    href={`${API_URL}${selectedUser.resume_url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View Resume
+                  </a>
+                ) : (
+                  "No resume uploaded"
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="admin-section">
         <div className="admin-section-header">
@@ -389,80 +528,74 @@ function AdminDashboard() {
           </div>
         </div>
 
-        <div className="admin-stats">
-          <div className="admin-stat-card">
-            <h3>Total Users</h3>
-
-            <h2>
-              {stats.users}
-            </h2>
-
-            <p>
-              Registered users
-            </p>
+        {usersLoading ? (
+          <div className="admin-no-jobs">
+            Loading users...
           </div>
-        </div>
-
-        <div className="admin-company-details">
-          <h2>
-            User Management
-          </h2>
-
-          <div className="admin-detail-row">
-            <span className="admin-detail-label">
-              Total Registered Users
-            </span>
-
-            <span className="admin-detail-value">
-              {stats.users}
-            </span>
+        ) : users.length === 0 ? (
+          <div className="admin-no-jobs">
+            No users available.
           </div>
+        ) : (
+          <div className="admin-company-list">
+            {users.map((user) => (
+              <div
+                className="admin-company-card"
+                key={user.id}
+                onClick={() =>
+                  setSelectedUser(user)
+                }
+              >
+                <h3>
+                  {user.name ||
+                    "Unnamed User"}
+                </h3>
 
-          <div className="admin-detail-row">
-            <span className="admin-detail-label">
-              Platform
-            </span>
+                <p>
+                  Email:{" "}
+                  {user.email ||
+                    "Not available"}
+                </p>
 
-            <span className="admin-detail-value">
-              CareerGo
-            </span>
+                <p>
+                  Role: User
+                </p>
+
+                <p>
+                  Resume:{" "}
+                  {user.resume_url
+                    ? "Available"
+                    : "Not uploaded"}
+                </p>
+
+                <span>
+                  View User Details →
+                </span>
+              </div>
+            ))}
           </div>
-
-          <div className="admin-detail-row">
-            <span className="admin-detail-label">
-              Account Type
-            </span>
-
-            <span className="admin-detail-value">
-              Job Seeker
-            </span>
-          </div>
-        </div>
+        )}
       </div>
     );
   };
-
-  // ================================
-  // COMPANY DETAILS
-  // ================================
 
   const renderCompanyDetails = () => {
     if (!selectedCompany) {
       return null;
     }
 
-    const companyJobs =
-      jobs.filter((job) => {
+    const companyJobs = jobs.filter(
+      (job) => {
         const name =
           job.company_name ||
           job.company ||
           "Company";
 
         return (
-          name ===
-          selectedCompany.name
+          name === selectedCompany.name
         );
-      });
+      }
+    );
 
     return (
       <div className="admin-section">
@@ -477,9 +610,7 @@ function AdminDashboard() {
 
         <div
           className="admin-company-details"
-          style={{
-            marginTop: "20px"
-          }}
+          style={{ marginTop: "20px" }}
         >
           <h2>
             {selectedCompany.name}
@@ -529,9 +660,7 @@ function AdminDashboard() {
         <div className="admin-job-management">
           <div className="admin-job-header">
             <div>
-              <h2>
-                Company Jobs
-              </h2>
+              <h2>Company Jobs</h2>
 
               <p>
                 Jobs posted by{" "}
@@ -604,10 +733,6 @@ function AdminDashboard() {
     );
   };
 
-  // ================================
-  // COMPANIES
-  // ================================
-
   const renderCompanies = () => {
     if (selectedCompany) {
       return renderCompanyDetails();
@@ -617,9 +742,7 @@ function AdminDashboard() {
       <div className="admin-section">
         <div className="admin-section-header">
           <div>
-            <h2>
-              Companies
-            </h2>
+            <h2>Companies</h2>
 
             <p>
               Select a company to view
@@ -639,11 +762,11 @@ function AdminDashboard() {
                 <div
                   className="admin-company-card"
                   key={index}
-                  onClick={() => {
+                  onClick={() =>
                     setSelectedCompany(
                       company
-                    );
-                  }}
+                    )
+                  }
                 >
                   <h3>
                     {company.name}
@@ -676,48 +799,27 @@ function AdminDashboard() {
     );
   };
 
-  // ================================
-  // JOBS
-  // ================================
-
   const renderJobs = () => {
     return (
       <div className="admin-job-management">
         <div className="admin-job-header">
           <div>
-            <h2>
-              Job Management
-            </h2>
+            <h2>Job Management</h2>
 
             <p>
               Manage all jobs posted
               on CareerGo
             </p>
           </div>
-
-          <button
-            className="admin-post-job-btn"
-            onClick={() => {
-              alert(
-                "Post Job section will be added next."
-              );
-            }}
-          >
-            + Post New Job
-          </button>
         </div>
 
         {jobsLoading ? (
           <div className="admin-no-jobs">
-            <p>
-              Loading jobs...
-            </p>
+            Loading jobs...
           </div>
         ) : jobs.length === 0 ? (
           <div className="admin-no-jobs">
-            <p>
-              No jobs available.
-            </p>
+            No jobs available.
           </div>
         ) : (
           <div className="admin-job-list">
@@ -752,8 +854,8 @@ function AdminDashboard() {
 
                   <p className="admin-job-details">
                     Type:{" "}
-                    {job.job_type ||
-                      job.type ||
+                    {job.type ||
+                      job.job_type ||
                       "Not specified"}
                   </p>
 
@@ -789,22 +891,232 @@ function AdminDashboard() {
             ))}
           </div>
         )}
+
+        {editingJob && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.6)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+              padding: "20px"
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                width: "100%",
+                maxWidth: "650px",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                borderRadius: "12px",
+                padding: "25px"
+              }}
+            >
+              <h2>Edit Job</h2>
+
+              <form
+                onSubmit={handleUpdateJob}
+              >
+                <div
+                  style={{
+                    marginBottom: "15px"
+                  }}
+                >
+                  <label>
+                    Job Title
+                  </label>
+
+                  <input
+                    type="text"
+                    name="title"
+                    value={editForm.title}
+                    onChange={
+                      handleEditChange
+                    }
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "5px"
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "15px"
+                  }}
+                >
+                  <label>
+                    Description
+                  </label>
+
+                  <textarea
+                    name="description"
+                    value={
+                      editForm.description
+                    }
+                    onChange={
+                      handleEditChange
+                    }
+                    required
+                    rows="5"
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "5px"
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "15px"
+                  }}
+                >
+                  <label>
+                    Location
+                  </label>
+
+                  <input
+                    type="text"
+                    name="location"
+                    value={
+                      editForm.location
+                    }
+                    onChange={
+                      handleEditChange
+                    }
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "5px"
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "15px"
+                  }}
+                >
+                  <label>
+                    Salary
+                  </label>
+
+                  <input
+                    type="text"
+                    name="salary"
+                    value={editForm.salary}
+                    onChange={
+                      handleEditChange
+                    }
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "5px"
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "15px"
+                  }}
+                >
+                  <label>
+                    Job Type
+                  </label>
+
+                  <input
+                    type="text"
+                    name="type"
+                    value={editForm.type}
+                    onChange={
+                      handleEditChange
+                    }
+                    required
+                    placeholder="Full Time / Part Time / Internship"
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "5px"
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    marginBottom: "20px"
+                  }}
+                >
+                  <label>
+                    Skills
+                  </label>
+
+                  <input
+                    type="text"
+                    name="skills"
+                    value={editForm.skills}
+                    onChange={
+                      handleEditChange
+                    }
+                    required
+                    placeholder="Python, React, MySQL"
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "5px"
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px"
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className="admin-edit-btn"
+                    disabled={savingJob}
+                  >
+                    {savingJob
+                      ? "Saving..."
+                      : "Save Changes"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="admin-delete-btn"
+                    onClick={() =>
+                      setEditingJob(null)
+                    }
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
-
-  // ================================
-  // APPLICATIONS
-  // ================================
 
   const renderApplications = () => {
     return (
       <div className="admin-section">
         <div className="admin-section-header">
           <div>
-            <h2>
-              Applications
-            </h2>
+            <h2>Applications</h2>
 
             <p>
               Manage application
@@ -815,40 +1127,28 @@ function AdminDashboard() {
 
         <div className="admin-stats">
           <div className="admin-stat-card">
-            <h3>
-              Total Applications
-            </h3>
-
+            <h3>Total Applications</h3>
             <h2>
               {stats.applications}
             </h2>
           </div>
 
           <div className="admin-stat-card">
-            <h3>
-              Pending
-            </h3>
-
+            <h3>Pending</h3>
             <h2>
               {stats.pending_applications}
             </h2>
           </div>
 
           <div className="admin-stat-card">
-            <h3>
-              Accepted
-            </h3>
-
+            <h3>Accepted</h3>
             <h2>
               {stats.accepted_applications}
             </h2>
           </div>
 
           <div className="admin-stat-card">
-            <h3>
-              Rejected
-            </h3>
-
+            <h3>Rejected</h3>
             <h2>
               {stats.rejected_applications}
             </h2>
@@ -904,10 +1204,6 @@ function AdminDashboard() {
     );
   };
 
-  // ================================
-  // CONTENT SWITCH
-  // ================================
-
   const renderContent = () => {
     switch (activeMenu) {
       case "users":
@@ -927,31 +1223,18 @@ function AdminDashboard() {
     }
   };
 
-  // ================================
-  // MAIN UI
-  // ================================
-
   return (
     <div className="admin-layout">
-
-      {/* ============================
-          SIDEBAR
-      ============================ */}
-
       <aside className="admin-sidebar">
-
         <div className="admin-sidebar-brand">
           <div className="admin-logo">
             CG
           </div>
 
-          <h2>
-            CareerGo
-          </h2>
+          <h2>CareerGo</h2>
         </div>
 
         <nav className="admin-sidebar-menu">
-
           {menuItems.map((item) => (
             <button
               key={item.id}
@@ -961,13 +1244,9 @@ function AdminDashboard() {
                   : "admin-menu-item"
               }
               onClick={() => {
-                setActiveMenu(
-                  item.id
-                );
-
-                setSelectedCompany(
-                  null
-                );
+                setActiveMenu(item.id);
+                setSelectedCompany(null);
+                setSelectedUser(null);
               }}
             >
               <span className="admin-menu-icon">
@@ -979,27 +1258,21 @@ function AdminDashboard() {
               </span>
             </button>
           ))}
-
         </nav>
 
         <div className="admin-sidebar-bottom">
-
           <div className="admin-user-box">
-
             <div className="admin-user-avatar">
               A
             </div>
 
             <div>
-              <strong>
-                Admin
-              </strong>
+              <strong>Admin</strong>
 
               <small>
                 CareerGo Admin
               </small>
             </div>
-
           </div>
 
           <button
@@ -1008,21 +1281,12 @@ function AdminDashboard() {
           >
             Logout
           </button>
-
         </div>
-
       </aside>
 
-      {/* ============================
-          MAIN CONTENT
-      ============================ */}
-
       <main className="admin-main-content">
-
         {renderContent()}
-
       </main>
-
     </div>
   );
 }
