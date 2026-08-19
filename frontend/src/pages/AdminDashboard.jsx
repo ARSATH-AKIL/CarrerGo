@@ -441,7 +441,7 @@ function AdminDashboard() {
     );
 
     window.location.href =
-      "/login";
+      "/";
   };
 
   const menuItems = [
