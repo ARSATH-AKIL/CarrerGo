@@ -1,46 +1,49 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function CompanyProfile() {
-  const navigate = useNavigate();
 
-  const [company, setCompany] = useState(null);
+  const storedCompany = localStorage.getItem("company");
 
-  useEffect(() => {
-    const storedCompany =
-      localStorage.getItem("company");
+  let company = null;
 
-    if (!storedCompany) {
-      navigate("/company-login");
-      return;
-    }
-
-    try {
-      const companyData =
-        JSON.parse(storedCompany);
-
-      setCompany(companyData);
-    } catch (error) {
-      console.error(
-        "COMPANY PROFILE ERROR:",
-        error
-      );
-
-      localStorage.removeItem("company");
-
-      navigate("/company-login");
-    }
-  }, [navigate]);
-
-  if (!company) {
-    return (
-      <div className="company-profile-loading">
-        <p>Loading company details...</p>
-      </div>
-    );
+  try {
+    company = storedCompany
+      ? JSON.parse(storedCompany)
+      : null;
+  } catch (error) {
+    console.error("COMPANY PROFILE ERROR:", error);
   }
 
+  if (!company) {
+
+    return (
+      <div className="company-profile-page">
+
+        <div className="company-profile-error">
+
+          <h2>Company information not found</h2>
+
+          <Link to="/company-login">
+            Go to Company Login
+          </Link>
+
+        </div>
+
+      </div>
+    );
+
+  }
+
+  const companyName = company.name || "Company";
+  const companyEmail = company.email || "Not available";
+  const companyRole = company.role || "company";
+  const companyId = company.id || "Not available";
+
+  const firstLetter =
+    companyName.charAt(0).toUpperCase();
+
   return (
+
     <div className="company-profile-page">
 
       {/* HEADER */}
@@ -49,7 +52,7 @@ function CompanyProfile() {
 
         <div>
 
-          <span className="profile-label">
+          <span className="company-page-label">
             COMPANY PROFILE
           </span>
 
@@ -58,8 +61,7 @@ function CompanyProfile() {
           </h1>
 
           <p>
-            View your registered company
-            information.
+            View your registered company information.
           </p>
 
         </div>
@@ -73,89 +75,79 @@ function CompanyProfile() {
 
       </div>
 
+
       {/* PROFILE CARD */}
 
       <div className="company-profile-card">
 
-        <div className="profile-card-top">
-
-          <div className="large-company-avatar">
-            {company.name
-              ? company.name
-                  .charAt(0)
-                  .toUpperCase()
-              : "C"}
-          </div>
-
-          <div className="profile-company-heading">
-
-            <h2>
-              {company.name ||
-                "Company Name"}
-            </h2>
-
-            <p>
-              {company.email ||
-                "No email available"}
-            </p>
-
-          </div>
-
+        <div className="profile-avatar">
+          {firstLetter}
         </div>
 
-        {/* DETAILS */}
 
-        <div className="company-details-grid">
+        <div className="profile-main">
 
-          <div className="company-detail-item">
+          <h2>
+            {companyName}
+          </h2>
 
-            <span>
-              Company Name
-            </span>
+          <p className="profile-email">
+            {companyEmail}
+          </p>
 
-            <strong>
-              {company.name ||
-                "Not available"}
-            </strong>
 
-          </div>
+          <div className="profile-information">
 
-          <div className="company-detail-item">
+            <div className="profile-info-row">
 
-            <span>
-              Email Address
-            </span>
+              <span>
+                Company Name
+              </span>
 
-            <strong>
-              {company.email ||
-                "Not available"}
-            </strong>
+              <strong>
+                {companyName}
+              </strong>
 
-          </div>
+            </div>
 
-          <div className="company-detail-item">
 
-            <span>
-              Account Role
-            </span>
+            <div className="profile-info-row">
 
-            <strong>
-              {company.role ||
-                "Company"}
-            </strong>
+              <span>
+                Email Address
+              </span>
 
-          </div>
+              <strong>
+                {companyEmail}
+              </strong>
 
-          <div className="company-detail-item">
+            </div>
 
-            <span>
-              Company ID
-            </span>
 
-            <strong>
-              {company.id ||
-                "Not available"}
-            </strong>
+            <div className="profile-info-row">
+
+              <span>
+                Account Role
+              </span>
+
+              <strong>
+                {companyRole}
+              </strong>
+
+            </div>
+
+
+            <div className="profile-info-row">
+
+              <span>
+                Company ID
+              </span>
+
+              <strong>
+                {companyId}
+              </strong>
+
+            </div>
 
           </div>
 
@@ -163,25 +155,27 @@ function CompanyProfile() {
 
       </div>
 
+
       {/* ACCOUNT INFORMATION */}
 
-      <div className="company-profile-section">
+      <div className="account-information">
 
         <h2>
           Account Information
         </h2>
 
         <p>
-          Your company account is connected
-          to CareerGo. You can use the company
-          dashboard to manage jobs and
-          applications.
+          Your company account is connected to CareerGo.
+          You can use the company dashboard to manage jobs
+          and applications.
         </p>
 
       </div>
 
     </div>
+
   );
+
 }
 
 export default CompanyProfile;
