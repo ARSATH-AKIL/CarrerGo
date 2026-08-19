@@ -1,0 +1,513 @@
+* {
+  box-sizing: border-box;
+}
+
+.company-layout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  background: #f5f7fb;
+  color: #111111;
+}
+
+.company-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  padding: 24px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  background: #111111;
+  color: #ffffff;
+  z-index: 9999;
+}
+
+.company-logo-area {
+  width: 100%;
+  min-height: 65px;
+  padding: 0 8px 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.company-logo {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.company-logo-text {
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.company-sidebar-nav {
+  width: 100%;
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.company-nav-item {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  color: #ffffff !important;
+  background: transparent;
+  text-decoration: none !important;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.company-nav-item:hover {
+  background: #222222;
+  color: #ffffff !important;
+}
+
+.company-nav-item.active {
+  background: #ffffff;
+  color: #111111 !important;
+}
+
+.company-nav-item.active:hover {
+  background: #ffffff;
+  color: #111111 !important;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.company-sidebar-bottom {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid #2d2d2d;
+}
+
+.company-sidebar-profile {
+  width: 100%;
+  padding: 5px 5px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.company-avatar-small {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.company-sidebar-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.company-sidebar-info strong {
+  display: block;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.company-sidebar-info span {
+  display: block;
+  overflow: hidden;
+  color: #aaaaaa;
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.company-sidebar-logout {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #3d3d3d;
+  border-radius: 7px;
+  outline: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.company-sidebar-logout:hover {
+  background: #ffffff;
+  color: #111111;
+}
+
+.company-main-content {
+  width: calc(100% - 250px);
+  min-height: 100vh;
+  margin-left: 250px;
+  padding: 55px 60px;
+  background: #f5f7fb;
+}
+
+.company-dashboard-page {
+  width: 100%;
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+.company-dashboard-header {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.company-header-text {
+  text-align: left;
+}
+
+.company-page-label {
+  display: block;
+  margin-bottom: 10px;
+  color: #777777;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.company-header-text h1 {
+  margin: 0;
+  color: #111111;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.company-header-text p {
+  margin: 9px 0 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+.company-summary-card {
+  width: 100%;
+  min-height: 105px;
+  margin-bottom: 40px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  border: 1px solid #e3e3e3;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.company-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.company-large-avatar {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.company-summary-details h2 {
+  margin: 0 0 5px;
+  color: #111111;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.company-summary-details p {
+  margin: 0;
+  color: #777777;
+  font-size: 12px;
+}
+
+.company-summary-right {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.company-role {
+  padding-right: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-right: 1px solid #dddddd;
+}
+
+.company-role span {
+  color: #999999;
+  font-size: 10px;
+}
+
+.company-role strong {
+  color: #111111;
+  font-size: 12px;
+}
+
+.view-company-button {
+  height: 40px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #111111 !important;
+  text-decoration: none !important;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.view-company-button:hover {
+  border-color: #111111;
+  background: #111111;
+  color: #ffffff !important;
+}
+
+.company-overview {
+  width: 100%;
+}
+
+.section-heading {
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: #111111;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.section-heading p {
+  margin: 5px 0 0;
+  color: #888888;
+  font-size: 11px;
+}
+
+.overview-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.overview-card {
+  min-height: 190px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.025);
+}
+
+.overview-card-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.overview-icon {
+  width: 31px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.overview-status {
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #f1f1f1;
+  color: #555555;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.overview-number {
+  margin-top: 25px;
+  color: #111111;
+  font-size: 31px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.overview-card h3 {
+  margin: 9px 0 0;
+  color: #111111;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.overview-card p {
+  margin: 8px 0 0;
+  color: #888888;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.company-dashboard-loading {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fb;
+  color: #555555;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 12px;
+  border: 3px solid #dddddd;
+  border-top-color: #111111;
+  border-radius: 50%;
+  animation: companySpin 0.7s linear infinite;
+}
+
+@keyframes companySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1100px) {
+  .company-main-content {
+    padding: 40px 30px;
+  }
+
+  .overview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .company-sidebar {
+    width: 210px;
+  }
+
+  .company-main-content {
+    width: calc(100% - 210px);
+    margin-left: 210px;
+    padding: 30px 20px;
+  }
+
+  .company-summary-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .company-summary-right {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .company-layout {
+    display: block;
+  }
+
+  .company-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+  }
+
+  .company-main-content {
+    width: 100%;
+    margin-left: 0;
+    padding: 25px 16px;
+  }
+
+  .company-header-text h1 {
+    font-size: 27px;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-summary-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .company-role {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .view-company-button {
+    width: 100%;
+  }
+}
