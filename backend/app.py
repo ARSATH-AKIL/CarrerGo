@@ -2,13 +2,19 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import mysql.connector
-from mysql.connector import Error
 import os
 
+
+# =========================================================
 # CAREERGO FLASK APPLICATION
+# =========================================================
+
 app = Flask(__name__)
 
+
+# =========================================================
 # CORS CONFIGURATION
+# =========================================================
 
 CORS(
     app,
@@ -19,6 +25,8 @@ CORS(
     },
     supports_credentials=False
 )
+
+
 # =========================================================
 # DATABASE CONFIGURATION
 # =========================================================
@@ -29,8 +37,11 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
-# Optional SSL configuration
-DB_SSL_CA = os.getenv("DB_SSL_CA", "").strip()
+DB_SSL_CA = os.getenv(
+    "DB_SSL_CA",
+    ""
+).strip()
+
 DB_SSL_DISABLED = os.getenv(
     "DB_SSL_DISABLED",
     "false"
@@ -45,7 +56,6 @@ def get_db_connection():
 
     try:
 
-        # Check environment variables
         if not DB_HOST:
             print("DATABASE ERROR: DB_HOST is missing")
             return None
@@ -64,11 +74,15 @@ def get_db_connection():
 
         try:
             port = int(DB_PORT)
+
         except (ValueError, TypeError):
-            print("DATABASE ERROR: DB_PORT must be a number")
+
+            print(
+                "DATABASE ERROR: DB_PORT must be a number"
+            )
+
             return None
 
-        # Database configuration
         config = {
             "host": DB_HOST,
             "port": port,
@@ -96,40 +110,93 @@ def get_db_connection():
         # CONNECT TO MYSQL
         # =================================================
 
-        connection = mysql.connector.connect(**config)
+        connection = mysql.connector.connect(
+            **config
+        )
 
         if connection.is_connected():
 
-            print("==============================================")
-            print("MYSQL DATABASE CONNECTED")
-            print("==============================================")
-            print("HOST:", DB_HOST)
-            print("PORT:", port)
-            print("DATABASE:", DB_NAME)
-            print("USER:", DB_USER)
-            print("==============================================")
+            print(
+                "=============================================="
+            )
+
+            print(
+                "MYSQL DATABASE CONNECTED"
+            )
+
+            print(
+                "=============================================="
+            )
+
+            print(
+                "HOST:",
+                DB_HOST
+            )
+
+            print(
+                "PORT:",
+                port
+            )
+
+            print(
+                "DATABASE:",
+                DB_NAME
+            )
+
+            print(
+                "USER:",
+                DB_USER
+            )
+
+            print(
+                "=============================================="
+            )
 
             return connection
 
-        print("MYSQL CONNECTION FAILED")
+        print(
+            "MYSQL CONNECTION FAILED"
+        )
 
         return None
 
     except mysql.connector.Error as e:
 
-        print("==============================================")
-        print("MYSQL CONNECTION ERROR")
-        print(e)
-        print("==============================================")
+        print(
+            "=============================================="
+        )
+
+        print(
+            "MYSQL CONNECTION ERROR"
+        )
+
+        print(
+            e
+        )
+
+        print(
+            "=============================================="
+        )
 
         return None
 
     except Exception as e:
 
-        print("==============================================")
-        print("DATABASE CONNECTION ERROR")
-        print(e)
-        print("==============================================")
+        print(
+            "=============================================="
+        )
+
+        print(
+            "DATABASE CONNECTION ERROR"
+        )
+
+        print(
+            e
+        )
+
+        print(
+            "=============================================="
+        )
 
         return None
 
@@ -150,25 +217,37 @@ def test_database_connection():
 
             cursor = db.cursor()
 
-            cursor.execute("SELECT 1")
+            cursor.execute(
+                "SELECT 1"
+            )
 
             result = cursor.fetchone()
 
-            print("DATABASE TEST RESULT:", result)
+            print(
+                "DATABASE TEST RESULT:",
+                result
+            )
 
             cursor.close()
 
-            print("DATABASE TEST SUCCESS")
+            print(
+                "DATABASE TEST SUCCESS"
+            )
 
             return True
 
-        print("DATABASE TEST FAILED")
+        print(
+            "DATABASE TEST FAILED"
+        )
 
         return False
 
     except Exception as e:
 
-        print("DATABASE TEST ERROR:", e)
+        print(
+            "DATABASE TEST ERROR:",
+            e
+        )
 
         return False
 
@@ -181,6 +260,7 @@ def test_database_connection():
 
             except Exception:
                 pass
+
 
 # =========================================================
 # FILE UPLOAD CONFIGURATION
@@ -252,12 +332,17 @@ def get_resume_file_path(resume_path):
 # HOME
 # =========================================================
 
-@app.route("/", methods=["GET"])
+@app.route(
+    "/",
+    methods=["GET"]
+)
 def home():
 
     return jsonify({
-        "message": "CareerGo Backend is Running!",
-        "status": "success"
+        "message":
+        "CareerGo Backend is Running!",
+        "status":
+        "success"
     }), 200
 
 
@@ -265,7 +350,10 @@ def home():
 # HEALTH CHECK
 # =========================================================
 
-@app.route("/health", methods=["GET"])
+@app.route(
+    "/health",
+    methods=["GET"]
+)
 def health():
 
     db = None
@@ -277,9 +365,12 @@ def health():
         if not db:
 
             return jsonify({
-                "status": "database_error",
-                "database_connected": False,
-                "message": "Unable to connect to MySQL"
+                "status":
+                "database_error",
+                "database_connected":
+                False,
+                "message":
+                "Unable to connect to MySQL"
             }), 500
 
         cursor = db.cursor()
@@ -293,17 +384,23 @@ def health():
         cursor.close()
 
         return jsonify({
-            "status": "ok",
-            "database_connected": True,
-            "message": "CareerGo backend and database are working"
+            "status":
+            "ok",
+            "database_connected":
+            True,
+            "message":
+            "CareerGo backend and database are working"
         }), 200
 
     except Exception as e:
 
         return jsonify({
-            "status": "database_error",
-            "database_connected": False,
-            "message": str(e)
+            "status":
+            "database_error",
+            "database_connected":
+            False,
+            "message":
+            str(e)
         }), 500
 
     finally:
@@ -312,6 +409,7 @@ def health():
 
             try:
                 db.close()
+
             except Exception:
                 pass
 
@@ -338,12 +436,21 @@ def register():
         if not data:
 
             return jsonify({
-                "message": "No data received"
+                "message":
+                "No data received"
             }), 400
 
-        name = data.get("name")
-        email = data.get("email")
-        password = data.get("password")
+        name = data.get(
+            "name"
+        )
+
+        email = data.get(
+            "email"
+        )
+
+        password = data.get(
+            "password"
+        )
 
         if not name or not email or not password:
 
@@ -457,8 +564,13 @@ def login():
                 "No data received"
             }), 400
 
-        email = data.get("email")
-        password = data.get("password")
+        email = data.get(
+            "email"
+        )
+
+        password = data.get(
+            "password"
+        )
 
         if not email or not password:
 
@@ -576,9 +688,17 @@ def company_register():
                 "No data received"
             }), 400
 
-        name = data.get("name")
-        email = data.get("email")
-        password = data.get("password")
+        name = data.get(
+            "name"
+        )
+
+        email = data.get(
+            "email"
+        )
+
+        password = data.get(
+            "password"
+        )
 
         if not name or not email or not password:
 
@@ -694,8 +814,13 @@ def company_login():
                 "No data received"
             }), 400
 
-        email = data.get("email")
-        password = data.get("password")
+        email = data.get(
+            "email"
+        )
+
+        password = data.get(
+            "password"
+        )
 
         if not email or not password:
 
@@ -812,8 +937,13 @@ def admin_login():
                 "No data received"
             }), 400
 
-        email = data.get("email")
-        password = data.get("password")
+        email = data.get(
+            "email"
+        )
+
+        password = data.get(
+            "password"
+        )
 
         if not email or not password:
 
@@ -907,6 +1037,7 @@ def admin_login():
 # =========================================================
 # ADMIN DASHBOARD
 # =========================================================
+
 @app.route(
     "/api/admin/dashboard",
     methods=["GET"]
@@ -1066,6 +1197,184 @@ def admin_dashboard():
             db.close()
 
 
+# =========================================================
+# ADMIN USERS
+# =========================================================
+
+@app.route(
+    "/api/admin/users",
+    methods=["GET"]
+)
+def get_admin_users():
+
+    db = None
+    cursor = None
+
+    try:
+
+        db = get_db_connection()
+
+        if not db:
+
+            return jsonify({
+                "message":
+                "Database connection failed"
+            }), 500
+
+        cursor = db.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email,
+                resume
+            FROM job_seekers
+            ORDER BY id DESC
+            """
+        )
+
+        users = cursor.fetchall()
+
+        for user in users:
+
+            if user.get("resume"):
+
+                user["resume_url"] = (
+                    f"/api/user/resume/{user['id']}"
+                )
+
+            else:
+
+                user["resume_url"] = None
+
+            user["role"] = "user"
+
+        return jsonify({
+            "users":
+            users
+        }), 200
+
+    except Exception as e:
+
+        print(
+            "ADMIN USERS ERROR:",
+            e
+        )
+
+        return jsonify({
+            "message":
+            "Unable to get users",
+            "error":
+            str(e)
+        }), 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
+
+
+# =========================================================
+# ADMIN USER DETAILS
+# =========================================================
+
+@app.route(
+    "/api/admin/users/<int:user_id>",
+    methods=["GET"]
+)
+def get_admin_user_details(user_id):
+
+    db = None
+    cursor = None
+
+    try:
+
+        db = get_db_connection()
+
+        if not db:
+
+            return jsonify({
+                "message":
+                "Database connection failed"
+            }), 500
+
+        cursor = db.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email,
+                resume
+            FROM job_seekers
+            WHERE id = %s
+            """,
+            (user_id,)
+        )
+
+        user = cursor.fetchone()
+
+        if not user:
+
+            return jsonify({
+                "message":
+                "User not found"
+            }), 404
+
+        if user.get("resume"):
+
+            user["resume_url"] = (
+                f"/api/user/resume/{user_id}"
+            )
+
+        else:
+
+            user["resume_url"] = None
+
+        user["role"] = "user"
+
+        return jsonify({
+            "user":
+            user
+        }), 200
+
+    except Exception as e:
+
+        print(
+            "ADMIN USER DETAILS ERROR:",
+            e
+        )
+
+        return jsonify({
+            "message":
+            "Unable to get user details",
+            "error":
+            str(e)
+        }), 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
+
+
+# =========================================================
+# ADMIN COMPANIES
+# =========================================================
+
 @app.route(
     "/api/admin/companies",
     methods=["GET"]
@@ -1130,6 +1439,87 @@ def get_admin_companies():
 
         if db:
             db.close()
+
+
+# =========================================================
+# ADMIN COMPANY DETAILS
+# =========================================================
+
+@app.route(
+    "/api/admin/companies/<int:company_id>",
+    methods=["GET"]
+)
+def get_admin_company_details(company_id):
+
+    db = None
+    cursor = None
+
+    try:
+
+        db = get_db_connection()
+
+        if not db:
+
+            return jsonify({
+                "message":
+                "Database connection failed"
+            }), 500
+
+        cursor = db.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email,
+                role
+            FROM users
+            WHERE id = %s
+            AND role = 'company'
+            """,
+            (company_id,)
+        )
+
+        company = cursor.fetchone()
+
+        if not company:
+
+            return jsonify({
+                "message":
+                "Company not found"
+            }), 404
+
+        return jsonify({
+            "company":
+            company
+        }), 200
+
+    except Exception as e:
+
+        print(
+            "ADMIN COMPANY DETAILS ERROR:",
+            e
+        )
+
+        return jsonify({
+            "message":
+            "Unable to get company details",
+            "error":
+            str(e)
+        }), 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
+
+
 # =========================================================
 # CREATE JOB
 # =========================================================
@@ -3222,7 +3612,7 @@ def get_company_profile(
 
 
 # =========================================================
-# ERROR HANDLERS
+# ERROR HANDLER - 413
 # =========================================================
 
 @app.errorhandler(413)
@@ -3236,6 +3626,10 @@ def request_entity_too_large(
     }), 413
 
 
+# =========================================================
+# ERROR HANDLER - 404
+# =========================================================
+
 @app.errorhandler(404)
 def page_not_found(
     error
@@ -3246,6 +3640,10 @@ def page_not_found(
         "API endpoint not found"
     }), 404
 
+
+# =========================================================
+# ERROR HANDLER - 500
+# =========================================================
 
 @app.errorhandler(500)
 def internal_server_error(
