@@ -1,12 +1,12 @@
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 function Jobs() {
   const [allJobs, setAllJobs] = useState([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [jobType, setJobType] = useState("");
+  const [expandedJob, setExpandedJob] = useState(null);
 
   const [savedJobs, setSavedJobs] = useState(() => {
     return JSON.parse(localStorage.getItem("savedJobs")) || [];
@@ -58,6 +58,16 @@ function Jobs() {
     );
   };
 
+  const toggleJobDescription = (jobId) => {
+    setExpandedJob((currentJob) => {
+      if (currentJob === jobId) {
+        return null;
+      }
+
+      return jobId;
+    });
+  };
+
   const filteredJobs = allJobs.filter((job) => {
     const jobSkills = Array.isArray(job.skills)
       ? job.skills.join(", ")
@@ -86,18 +96,22 @@ function Jobs() {
     setSearch("");
     setLocation("");
     setJobType("");
+    setExpandedJob(null);
   };
 
   return (
     <div className="jobs-page">
+
       <div className="jobs-header">
         <h1>Find Your Dream Job</h1>
+
         <p>
           Search and find the right opportunity for your career.
         </p>
       </div>
 
       <div className="jobs-filter-box">
+
         <input
           type="text"
           placeholder="Search job title, company or skills..."
@@ -133,11 +147,13 @@ function Jobs() {
         </select>
 
         <button
+          type="button"
           className="clear-filter-btn"
           onClick={clearFilters}
         >
           Clear
         </button>
+
       </div>
 
       <div className="jobs-result-count">
@@ -147,50 +163,92 @@ function Jobs() {
       </div>
 
       <div className="jobs-list">
+
         {loading ? (
+
           <div className="no-jobs">
             <h2>Loading Jobs...</h2>
-            <p>Please wait while jobs are loading.</p>
+            <p>
+              Please wait while jobs are loading.
+            </p>
           </div>
+
         ) : filteredJobs.length === 0 ? (
+
           <div className="no-jobs">
             <h2>No Jobs Found</h2>
-            <p>Try changing your search or filters.</p>
+            <p>
+              Try changing your search or filters.
+            </p>
           </div>
+
         ) : (
+
           filteredJobs.map((job) => {
             const jobSkills = Array.isArray(job.skills)
               ? job.skills.join(", ")
               : job.skills || "";
 
+            const isExpanded = expandedJob === job.id;
+
             return (
               <div
-                className="job-card"
+                className={`job-card ${
+                  isExpanded ? "job-card-expanded" : ""
+                }`}
                 key={job.id}
               >
+
                 <div className="job-card-info">
-                  <h2>{job.title}</h2>
+
+                  <h2>
+                    {job.title}
+                  </h2>
 
                   <h3>
                     {job.company_name || "Company"}
                   </h3>
 
                   <div className="job-meta">
-                    <span>📍 {job.location}</span>
-                    <span>💰 {job.salary}</span>
-                    <span>💼 {job.type}</span>
+
+                    <span>
+                      📍 {job.location || "Location"}
+                    </span>
+
+                    <span>
+                      💰 {job.salary || "Salary not specified"}
+                    </span>
+
+                    <span>
+                      💼 {job.type || "Job type not specified"}
+                    </span>
+
                   </div>
 
-                  <p className="job-description">
-                    {job.description}
+                  <p className="job-skills">
+                    <strong>Skills:</strong>{" "}
+                    {jobSkills || "Not specified"}
                   </p>
 
-                  <p className="job-skills">
-                    <strong>Skills:</strong> {jobSkills}
-                  </p>
+                  {isExpanded && (
+                    <div className="job-description-box">
+
+                      <h4>
+                        Job Description
+                      </h4>
+
+                      <p>
+                        {job.description ||
+                          "No job description available."}
+                      </p>
+
+                    </div>
+                  )}
+
                 </div>
 
                 <div className="job-card-actions">
+
                   <button
                     type="button"
                     className={`save-job-btn ${
@@ -210,18 +268,26 @@ function Jobs() {
                     )}
                   </button>
 
-                  <Link
-                    to={`/job-details/${job.id}`}
+                  <button
+                    type="button"
                     className="view-job-btn"
+                    onClick={() =>
+                      toggleJobDescription(job.id)
+                    }
                   >
-                    View Job
-                  </Link>
+                    {isExpanded ? "Hide Job" : "View Job"}
+                  </button>
+
                 </div>
+
               </div>
             );
           })
+
         )}
+
       </div>
+
     </div>
   );
 }
