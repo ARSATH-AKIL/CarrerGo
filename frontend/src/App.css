@@ -1056,28 +1056,49 @@ textarea {
   transform: translateY(-4px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
 }
-.company-logo {
-  width: 65px;
-  height: 65px;
-  margin: 0 auto 15px;
+.company-logo-area {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: #f5f1e5;
-  color: #b8860b;
-  font-size: 25px;
-  font-weight: bold;
+  gap: 12px;
+  margin-bottom: 25px;
 }
+
+.company-logo-link {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.company-logo-image {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  display: block;
+}
+
+.company-logo-text {
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .company-card h2 {
   font-size: 20px;
   color: #000000;
   margin-bottom: 15px;
 }
+
 .company-card p {
   margin: 8px 0;
   color: #666;
 }
+
 .view-jobs-btn {
   margin-top: 15px;
   padding: 10px 20px;
@@ -1086,7 +1107,9 @@ textarea {
   background: #1e3a5f;
   color: #ffffff;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
+
 .view-jobs-btn:hover {
   background: #142a45;
 }
