@@ -25,11 +25,13 @@ function Jobs() {
       })
       .then((data) => {
         console.log("JOBS FROM BACKEND:", data);
+
         setAllJobs(data.jobs || []);
         setLoading(false);
       })
       .catch((error) => {
         console.error("GET JOBS ERROR:", error);
+
         setAllJobs([]);
         setLoading(false);
       });
@@ -97,6 +99,10 @@ function Jobs() {
   return (
     <div className="jobs-page">
 
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
       <div className="jobs-header">
         <h1>Find Your Dream Job</h1>
 
@@ -104,6 +110,10 @@ function Jobs() {
           Search and find the right opportunity for your career.
         </p>
       </div>
+
+      {/* =====================================================
+          FILTERS
+      ===================================================== */}
 
       <div className="jobs-filter-box">
 
@@ -151,25 +161,47 @@ function Jobs() {
 
       </div>
 
+      {/* =====================================================
+          RESULT COUNT
+      ===================================================== */}
+
       <div className="jobs-result-count">
         <p>
           <strong>{filteredJobs.length}</strong> jobs found
         </p>
       </div>
 
+      {/* =====================================================
+          JOB LIST
+      ===================================================== */}
+
       <div className="jobs-list">
+
+        {/* LOADING */}
 
         {loading ? (
           <div className="no-jobs">
             <h2>Loading Jobs...</h2>
-            <p>Please wait while jobs are loading.</p>
+
+            <p>
+              Please wait while jobs are loading.
+            </p>
           </div>
         ) : filteredJobs.length === 0 ? (
+
+          /* NO JOBS */
+
           <div className="no-jobs">
             <h2>No Jobs Found</h2>
-            <p>Try changing your search or filters.</p>
+
+            <p>
+              Try changing your search or filters.
+            </p>
           </div>
         ) : (
+
+          /* JOBS */
+
           filteredJobs.map((job) => {
 
             const jobSkills = Array.isArray(job.skills)
@@ -182,20 +214,26 @@ function Jobs() {
                 key={job.id}
               >
 
+                {/* =================================================
+                    JOB INFORMATION
+                ================================================= */}
+
                 <div className="job-card-info">
 
                   <h2>
-                    {job.title}
+                    {job.title || "Job Title"}
                   </h2>
 
                   <h3>
                     {job.company_name || "Company"}
                   </h3>
 
+                  {/* LOCATION / SALARY / TYPE */}
+
                   <div className="job-meta">
 
                     <span>
-                      📍 {job.location || "Location"}
+                      📍 {job.location || "Location not specified"}
                     </span>
 
                     <span>
@@ -208,6 +246,8 @@ function Jobs() {
 
                   </div>
 
+                  {/* SKILLS */}
+
                   <p className="job-skills">
                     <strong>Skills:</strong>{" "}
                     {jobSkills || "Not specified"}
@@ -215,7 +255,13 @@ function Jobs() {
 
                 </div>
 
+                {/* =================================================
+                    ACTION BUTTONS
+                ================================================= */}
+
                 <div className="job-card-actions">
+
+                  {/* SAVE JOB */}
 
                   <button
                     type="button"
@@ -229,12 +275,16 @@ function Jobs() {
                         : "Save job"
                     }
                   >
+
                     {isSaved(job.id) ? (
                       <FaHeart />
                     ) : (
                       <FaRegHeart />
                     )}
+
                   </button>
+
+                  {/* VIEW JOB */}
 
                   <Link
                     to={`/job-details/${job.id}`}
