@@ -1,12 +1,12 @@
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Jobs() {
   const [allJobs, setAllJobs] = useState([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [jobType, setJobType] = useState("");
-  const [expandedJob, setExpandedJob] = useState(null);
 
   const [savedJobs, setSavedJobs] = useState(() => {
     return JSON.parse(localStorage.getItem("savedJobs")) || [];
@@ -58,16 +58,6 @@ function Jobs() {
     );
   };
 
-  const toggleJobDescription = (jobId) => {
-    setExpandedJob((currentJob) => {
-      if (currentJob === jobId) {
-        return null;
-      }
-
-      return jobId;
-    });
-  };
-
   const filteredJobs = allJobs.filter((job) => {
     const jobSkills = Array.isArray(job.skills)
       ? job.skills.join(", ")
@@ -79,9 +69,15 @@ function Jobs() {
     const jobTypeValue = job.type || "";
 
     const searchMatch =
-      jobTitle.toLowerCase().includes(search.toLowerCase()) ||
-      jobCompany.toLowerCase().includes(search.toLowerCase()) ||
-      jobSkills.toLowerCase().includes(search.toLowerCase());
+      jobTitle
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      jobCompany
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      jobSkills
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
     const locationMatch =
       location === "" || jobLocation === location;
@@ -96,7 +92,6 @@ function Jobs() {
     setSearch("");
     setLocation("");
     setJobType("");
-    setExpandedJob(null);
   };
 
   return (
@@ -165,37 +160,25 @@ function Jobs() {
       <div className="jobs-list">
 
         {loading ? (
-
           <div className="no-jobs">
             <h2>Loading Jobs...</h2>
-            <p>
-              Please wait while jobs are loading.
-            </p>
+            <p>Please wait while jobs are loading.</p>
           </div>
-
         ) : filteredJobs.length === 0 ? (
-
           <div className="no-jobs">
             <h2>No Jobs Found</h2>
-            <p>
-              Try changing your search or filters.
-            </p>
+            <p>Try changing your search or filters.</p>
           </div>
-
         ) : (
-
           filteredJobs.map((job) => {
+
             const jobSkills = Array.isArray(job.skills)
               ? job.skills.join(", ")
               : job.skills || "";
 
-            const isExpanded = expandedJob === job.id;
-
             return (
               <div
-                className={`job-card ${
-                  isExpanded ? "job-card-expanded" : ""
-                }`}
+                className="job-card"
                 key={job.id}
               >
 
@@ -230,21 +213,6 @@ function Jobs() {
                     {jobSkills || "Not specified"}
                   </p>
 
-                  {isExpanded && (
-                    <div className="job-description-box">
-
-                      <h4>
-                        Job Description
-                      </h4>
-
-                      <p>
-                        {job.description ||
-                          "No job description available."}
-                      </p>
-
-                    </div>
-                  )}
-
                 </div>
 
                 <div className="job-card-actions">
@@ -268,22 +236,18 @@ function Jobs() {
                     )}
                   </button>
 
-                  <button
-                    type="button"
+                  <Link
+                    to={`/job-details/${job.id}`}
                     className="view-job-btn"
-                    onClick={() =>
-                      toggleJobDescription(job.id)
-                    }
                   >
-                    {isExpanded ? "Hide Job" : "View Job"}
-                  </button>
+                    View Job
+                  </Link>
 
                 </div>
 
               </div>
             );
           })
-
         )}
 
       </div>
