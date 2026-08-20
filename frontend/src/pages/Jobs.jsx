@@ -181,9 +181,7 @@ function Jobs() {
                     <span>💼 {job.type}</span>
                   </div>
 
-                  <p className="job-description">
-                    {job.description}
-                  </p>
+                
 
                   <p className="job-skills">
                     <strong>Skills:</strong> {jobSkills}
