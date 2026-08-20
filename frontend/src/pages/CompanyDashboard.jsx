@@ -179,6 +179,14 @@ function CompanyDashboard() {
             CG
           </div>
           <span className="company-logo-text">
+             <Link to="/">
+
+          <img
+            src={logo}
+            alt="CareerGo"
+          />
+
+        </Link>
             CareerGo
           </span>
         </div>
